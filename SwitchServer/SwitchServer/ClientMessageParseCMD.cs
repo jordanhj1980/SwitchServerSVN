@@ -1,0 +1,426 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SuperWebSocket;
+using System.Threading;
+using System.Net;
+using System.IO;
+
+namespace SwitchServer
+{
+    partial class ClientMessageParse
+    {
+        /// <summary>
+        /// 解析CMD消息
+        /// </summary>
+        public bool ParseCMDMessage(string datastr)
+        {
+            //Command command;
+            TypeData message = ParseType(datastr);
+            TypeData commanddata = ParseType(message.data);
+            if (message.type.Equals("CMD"))
+            {
+                switch (commanddata.type)
+                {
+                    //case "QueryAllExt"://解析获取所有话机指令，给软交换发送对应的指令
+                    //    ParseQueryAllExt(commanddata.data);             
+                    //    break;
+                    case "GETSTATE"://解析查询话机状态指令，给软交换发送对应的指令
+                        ParseGetState(commanddata.data);
+                        break;
+                    case "Bargein"://解析强插指令，给软交换发送对应的指令
+                        ParseBargein(commanddata.data);
+                        break;
+                    case "Clear"://解析强拆指令，给软交换发送对应的指令
+                        ParseClear(commanddata.data);
+                        break;
+                    //case "GetAllExt"://获取用户的所有可管理设备
+                    //    break;
+                    case "Call"://解析拨号指令，给软交换发送对应的指令
+                        ParseCall(commanddata.data);
+                        break;
+                    case "Visitor":
+                        ParseVisitor(commanddata.data);
+                        break;
+                    case "CallOut":
+                        ParseCallOut(commanddata.data);
+                        break;
+                    case "Monitor":
+                        ParseMonitor(commanddata.data);
+                        break;
+                    case "NightServiceOn":
+                        ParseNightServiceOn(commanddata.data);
+                        break;
+                    case "NightServiceOff":
+                        ParseNightServiceOff(commanddata.data);
+                        break;
+                    case "GETCDR":
+                        ParseGetCdr(commanddata.data);
+                        break;
+                    case "Hold":
+                        ParseHold(commanddata.data);
+                        break;
+                    case "Unhold":
+                        ParseUnhold(commanddata.data);
+                        break;
+                    case "MenuToExt":
+                        ParseMenuToExt(commanddata.data);
+                        break;
+                    case "":
+                        break;
+
+                    default:
+                        Console.WriteLine("非可解析控制指令：" + commanddata.type);
+                        break;
+                }
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("非CMD控制指令！！");
+                return false;
+            }
+
+        }
+
+        public bool ParseNightServiceOn(string data)
+        {
+            CallData call;
+            SwitchDev switchdevice;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            string type;
+            switchdevice = Program.switchmanage.GetSwitchFromExtid(extlist,out type);
+            string lineid = switchdevice.GetLineidFromExtid(call.fromid);
+            AssignNightService command = new AssignNightService(lineid, call.toid);
+            command.On();
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "Status";
+            com.data = commandstr;
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        public bool ParseNightServiceOff(string data)
+        {
+            CallData call;
+            SwitchDev switchdevice;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            string type;
+            switchdevice = Program.switchmanage.GetSwitchFromExtid(extlist,out type);
+            string lineid = switchdevice.GetLineidFromExtid(call.fromid);
+            AssignNightService command = new AssignNightService(lineid, call.toid);
+            command.Off();
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "Status";
+            com.data = commandstr;
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        //public void ParseQueryAllExt(string data)
+        //{
+        //    Command command = new QueryDeviceInfo();
+        //    string commandstr = command.XmlCommandString;
+        //    TypeData com;
+        //    com.type = "QueryDeviceInfo";
+        //    com.data = commandstr;
+        //    Program.switchmanage.CommandSend("204", com);
+        //}
+        public void ParseClear(string data)
+        {
+            string extid = data;
+            Command command = new ClearCommand(extid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add(extid);
+            Program.switchmanage.CommandSend(extlist, com);
+        }
+        public bool ParseMonitor(string data)
+        {
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            Command command = new MonitorCommand(call.fromid, call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        public bool ParseBargein(string data)
+        {
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            Command command = new BargeinCommand(call.fromid, call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        public void ParseGetState(string data)
+        {
+            List<string> extid = new List<string>();
+            extid.Add(data);
+            string type;
+            SwitchDev switchdev = Program.switchmanage.GetSwitchFromExtid(extid,out type);
+            if(type=="ext")
+            {
+                Command command = new QueryExt(data);
+                string commandstr = command.XmlCommandString;
+                TypeData com;
+                com.type = "QueryExt";
+                com.data = commandstr;
+                switchdev.CommandSend(extid, com);
+            }
+            else if(type=="trunk")
+            {
+                Command command = new QueryTrunk(data);
+                string commandstr = command.XmlCommandString;
+                TypeData com;
+                com.type = "QueryTrunk";
+                com.data = commandstr;
+                switchdev.CommandSend(extid, com);
+            }
+
+        }
+        /// <summary>
+        /// 解析CMD里的Call消息
+        /// </summary>
+        public bool ParseCall(string data)
+        {
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            //获取软交换对象,根据fromid找软交换，根据toid判断命令类型，暂时固定
+            Command command = new ExtToExt(call.fromid, call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        /// <summary>
+        /// 来电转接分机
+        /// </summary>
+        /// <param name="data"></param>
+        public bool ParseVisitor(string data)
+        {
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            Command command = new VisitorToExt(call.fromid, call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            //暂时通过toid判断是哪个软交换
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            extlist.Add(call.toid);
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        public bool ParseCallOut(string data)
+        {
+            CallOut call;
+            //call = JsonConvert.DeserializeObject<CallOut>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallOut>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            Command command = new ExtToOuter(call.fromid, call.trunkid, call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "EVENT&CDR";
+            com.data = commandstr;
+            //暂时通过fromid判断是哪个软交换
+            List<string> extlist = new List<string>();
+            extlist.Add(call.fromid);
+            extlist.Add(call.toid);
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        /// <summary>
+        /// 获取所有通话记录
+        /// </summary>
+        /// <param name="data"></param>
+        public void ParseGetCdr(string data)
+        {
+            List<CDR> cdrlist = new List<CDR>();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+            cdrlist = sqlcom.GetCDR();
+
+            string respondstr = "CMD#GETCDR#" + JsonConvert.SerializeObject(cdrlist);
+            Console.WriteLine(respondstr);
+            clientsession.Send(respondstr);
+        }
+        public void ParseHold(string data)
+        {
+            HoldCommand command = new HoldCommand(data);
+            TypeData com;
+            com.type = "NULL";
+            com.data = command.XmlCommandString;
+            Console.WriteLine(com.data);
+            List<string> extlist = new List<string>();
+            extlist.Add(data);
+            Program.switchmanage.CommandSend(extlist, com); ;
+        }
+        public void ParseUnhold(string data)
+        {
+            UnholdCommand command = new UnholdCommand(data);
+            TypeData com;
+            com.type = "NULL";
+            com.data = command.XmlCommandString;
+            Console.WriteLine(com.data);
+            List<string> extlist = new List<string>();
+            extlist.Add(data);
+            Program.switchmanage.CommandSend(extlist, com); ;
+        }
+        /// <summary>
+        /// 语音菜单呼叫分机
+        /// </summary>
+        /// <param name="data"></param>
+        public bool ParseMenuToExt(string data)
+        {
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            MenuToExt command = new MenuToExt(call.fromid,call.toid);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "Menu";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add(call.toid);
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+        public bool ParseSetMenu(string data)
+        {
+            SetMenu setmenu;
+            //setmenu = JsonConvert.DeserializeObject<SetMenu>(data);
+            try
+            {
+                setmenu = JsonConvert.DeserializeObject<SetMenu>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            AssignMenu command = new AssignMenu(setmenu.menuid,setmenu.voicefile);
+            string commandstr = command.XmlCommandString;
+            TypeData com;
+            com.type = "Menu";
+            com.data = commandstr;
+            List<string> extlist = new List<string>();
+            extlist.Add("204");
+            Program.switchmanage.CommandSend(extlist, com);
+            return true;
+        }
+    }
+}
