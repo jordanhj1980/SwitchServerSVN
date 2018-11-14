@@ -96,22 +96,22 @@ namespace SwitchServer
                 case "RING":
                     this.state = "RING";
                     printstr = "收到振铃事件：" + ((XmlElement)root.FirstChild).GetAttribute("id") + "号分机振铃";
-                    this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("id");//第一项为被呼方
+                    this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("id");//第一项为被呼方
 
                     switch(((XmlElement)root.LastChild).Name)//第二项为呼叫方
                     {
                         case "visitor"://来电转分机，分机振铃:
-                            this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("from");
+                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("from");
                             break;
                         case "ext"://分机呼分机，分机振铃:
-                            this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("id");
+                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
                             break;
                         case "outer"://通过 API 实现分机外呼，且呼叫方式为 “先呼被叫，被叫回铃再呼主叫”时，主叫分机振铃:
-                            this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("to");
+                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("to");
                             //this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("to");
                             break;
                         case "menu"://menu呼分机，分机振铃
-                            this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("id");
+                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
                             break;
                         default:
                             Console.WriteLine("RING 存在未解析字段");
@@ -797,11 +797,11 @@ namespace SwitchServer
                     break;
                 case "active":
                     ext.state = "ANSWER";
-                    jasonstr = JsonConvert.SerializeObject(calldata);
+                    jasonstr = ext.extid;;
                     break;
                 case "unwired":
                     ext.state = "OFFLINE";
-                    jasonstr = JsonConvert.SerializeObject(calldata);
+                    jasonstr = ext.extid;;
                     break;
                 case "offline":
                     ext.state = "OFFLINE";

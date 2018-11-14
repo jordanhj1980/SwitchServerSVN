@@ -290,6 +290,11 @@ namespace SwitchServer
         {
             GroupData ext;
             ext.extid = "";
+            if(this.extlist==null)
+            {
+                Console.WriteLine("this.extlist 为空");
+                return false;
+            }
             foreach(string member in extid)
             {
                 ext = this.extlist.Find(c => c.extid.Equals(member));

@@ -15,11 +15,12 @@ namespace SwitchServer
             this.conn = iconn;
             try
             {
+
                 if (conn.State != System.Data.ConnectionState.Open)
                 {
                     conn.Open();
                 }    
-            }
+            } 
             catch(Exception ex)
             {
                 Console.WriteLine("DataBaseCommand wrong:"+ex.Message);
