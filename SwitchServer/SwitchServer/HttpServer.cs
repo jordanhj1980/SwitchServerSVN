@@ -122,11 +122,7 @@ namespace SwitchServer
             IpTypeData data = (IpTypeData)o;
             SwitchDev switcher = SwitchManage.switchlist.Find(c => c.ip.Equals(data.ip));
             switcher.MessageParse(data.typedata);
-            ReportMessage reportmessage = new ReportMessage();
-            reportmessage.extid.AddRange(switcher.extidlist);
-
-            reportmessage.message = switcher.reportstr;
-            Program.clientmanage.ReportState(reportmessage);
+            
             
         }
         

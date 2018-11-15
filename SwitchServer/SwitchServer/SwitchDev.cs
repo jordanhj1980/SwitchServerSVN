@@ -133,6 +133,7 @@ namespace SwitchServer
             string commandstr = "";
             TypeData commanddata;
             string printstr = "";
+            ReportMessage reportmessage;
 
             switch (datatype)
             {
@@ -140,12 +141,16 @@ namespace SwitchServer
                     EventMessage ParseEventMessage = new EventMessage();
                     printstr = ParseEventMessage.ParseEventCdr(revdata);
                     //this.extid = ParseEventMessage.extid;
-                    this.state = ParseEventMessage.state;
-                    this.reportstr = ParseEventMessage.reportstr;
-                    this.extidlist.Clear();
-                    this.extidlist.AddRange(ParseEventMessage.extlist);
-                    Console.WriteLine(this.reportstr);
-                    //printstr = ParseEventCdr(revdata);
+                    //this.state = ParseEventMessage.state;
+                    //this.reportstr = ParseEventMessage.reportstr;
+                    //this.extidlist.Clear();
+                    //this.extidlist.AddRange(ParseEventMessage.extlist);
+                    Console.WriteLine(ParseEventMessage.reportstr);
+
+                    reportmessage = new ReportMessage();
+                    reportmessage.extid.AddRange(ParseEventMessage.extlist);
+                    reportmessage.message = ParseEventMessage.reportstr;
+                    Program.clientmanage.ReportState(reportmessage);
 
                     switch (this.state)
                     {
@@ -192,7 +197,7 @@ namespace SwitchServer
                     Console.WriteLine(revdata);
                     //string state = ParseQueryExt.ext.state;
                     AssignExtAttr(ParseQueryExt.ext);
-                    ReportMessage reportmessage = new ReportMessage ();
+                    reportmessage = new ReportMessage ();
                     //reportmessage.extid = ParseQueryExt.ext.extid;
                     reportmessage.extid.Add(ParseQueryExt.ext.extid);
                     //reportmessage.message = "STATE#" + state+"#" + ParseQueryExt.ext.extid;
@@ -209,12 +214,12 @@ namespace SwitchServer
                     Console.WriteLine(revdata);
                     //string state = ParseQueryExt.ext.state;
                     AssignExtAttr(ParseQueryTrunk.ext);
-                    ReportMessage reportmessage1 = new ReportMessage ();
+                    reportmessage = new ReportMessage ();
                     //reportmessage.extid = ParseQueryExt.ext.extid;
-                    reportmessage1.extid.Add(ParseQueryTrunk.ext.extid);
+                    reportmessage.extid.Add(ParseQueryTrunk.ext.extid);
                     //reportmessage.message = "STATE#" + state+"#" + ParseQueryExt.ext.extid;
-                    reportmessage1.message = ParseQueryTrunk.reportstr;
-                    Program.clientmanage.ReportState(reportmessage1);
+                    reportmessage.message = ParseQueryTrunk.reportstr;
+                    Program.clientmanage.ReportState(reportmessage);
                     break;
                 case "Transfer":
                     printstr = "收到Transfer应答";

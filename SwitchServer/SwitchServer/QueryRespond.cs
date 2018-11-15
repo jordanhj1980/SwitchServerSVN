@@ -727,7 +727,7 @@ namespace SwitchServer
                     break;
             }
             reportstr = "STATE#" + ext.state + "#" + jasonstr;
-            return "返回" + ext.lineid + "号分机属性!" + "\n" + extattr;
+            return "返回" + ext.lineid + "号分机属性!" + "\n";// +extattr;
         }
         public string ParseTrunkRespond(string o)
         {
