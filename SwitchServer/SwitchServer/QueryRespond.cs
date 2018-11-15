@@ -164,7 +164,8 @@ namespace SwitchServer
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
                             break;
                         case "visitor":
-                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("from");
+                            this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("from");
+                            this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("to");
                             break;
                         default:
                             Console.WriteLine("ANSWER 存在未解析字段");
@@ -182,20 +183,33 @@ namespace SwitchServer
                     switch(((XmlElement)root.FirstChild).Name)
                     {
                         case "outer":
-                            this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("to");
+                            this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
+                            this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("to");
                             break;
                         case "ext":
                             this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("id");
                             break;
                         case "visitor":
-                            this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
+                            //this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
+                            this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("from");
                             break;
                         default:
                             Console.WriteLine("ANSWERED 存在未解析字段");
                             break;
                     }
+                    if (((XmlElement)root.FirstChild).Name.Equals("outer"))
+                    {
 
-                    this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
+                    }
+                    else if(((XmlElement)root.FirstChild).Name.Equals("visitor"))
+                    {
+                        this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("id");
+                    }
+                    else
+                    {
+                        this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
+                    }
+                    
 
                     reportstr = "STATE#ANSWERED#" + JsonConvert.SerializeObject(this.calldata);
                     break;

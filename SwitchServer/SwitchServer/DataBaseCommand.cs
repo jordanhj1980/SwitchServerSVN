@@ -346,7 +346,8 @@ namespace SwitchServer
             DataSet ds = new DataSet();
             string index = GetDeskIndex(name,pwd);
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat("select desk_grp_index,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}' and deskgrp.index = deskgrp_mem.desk_grp_index", index);
+            sqlstr.AppendFormat(@"select desk_grp_index,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
+                                and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", index);
             using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
             {
                     sqldap.Fill(ds);
