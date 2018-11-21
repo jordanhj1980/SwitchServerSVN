@@ -29,12 +29,15 @@ namespace SwitchServer
         //软交换管理实体
         public static SwitchManage switchmanage;// = new SwitchManage();
         static void Main(string[] args)
-        {
-            httpserver = new HttpServer("192.168.2.101", "80");
+        {            
+            //httpserver = new HttpServer("192.168.2.101", "80");
+            httpserver = new HttpServer("+", "80");
             httpserver.StartHttpServer();
-            websocketserver = new SimpleWebSocketServer("192.168.2.101","1020");
+            //websocketserver = new SimpleWebSocketServer("192.168.2.101","1020");
+            websocketserver = new SimpleWebSocketServer("localhost", "1020");
             websocketserver.Start();
-            string connString = @"Host=localhost;Port=5432;Username=postgres;Password=hj;Database=dispatch";
+            string connString = @"Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
+            //string connString = @"Host=192.168.2.10;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
             conn = new NpgsqlConnection(connString);
             try
             {

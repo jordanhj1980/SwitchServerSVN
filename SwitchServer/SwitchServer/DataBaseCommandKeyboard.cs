@@ -57,7 +57,7 @@ namespace SwitchServer
         /// <param name="structdata"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public bool AddKeyboard(AddKeyBoard structdata, out string reason)
+        public bool AddKeyboard(AddKeyBoard structdata, out string reason, out string index)
         {
             StringBuilder sqlstr = new StringBuilder();
             string title = "";
@@ -65,6 +65,7 @@ namespace SwitchServer
             if ((structdata.name == null) || (structdata.name == ""))
             {
                 reason = "name不能为空！";
+                index = "";
                 return false;
             }
             title = "name,ip,mac";
@@ -85,12 +86,15 @@ namespace SwitchServer
                     //添加分组
                     InsertDeskGroup(structdata.grouplist, deskindex.ToString());
                     reason = "";
+                    index = deskindex.ToString();
                     return true;
                 }
                 else
                 {
-                    reason = "AddKeyboard存在重复！";
-                    return false;
+                    EditKeyboard(structdata, out reason);
+                    //reason = "AddKeyboard存在重复！";
+                    index = structdata.index;
+                    return true;
                 }
 
             }
@@ -98,6 +102,7 @@ namespace SwitchServer
             {
                 reason = "AddKeyboard数据库异常！" + e.Message;
                 Console.WriteLine(e.Message);
+                index = "";
                 return false;
             }
         }

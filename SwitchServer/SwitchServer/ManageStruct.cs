@@ -139,6 +139,16 @@ namespace SwitchServer
         public string reason;
     }
     /// <summary>
+    /// AddKeyBoard应答
+    /// </summary>
+    public class AddKeyBoardRespond
+    {
+        public string sequence;
+        public string index;
+        public string result;
+        public string reason;
+    }
+    /// <summary>
     /// 删除调度员
     /// </summary>
     public class DelUser

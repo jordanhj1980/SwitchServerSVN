@@ -48,6 +48,7 @@ namespace SwitchServer
         {
             //string httpserveruri = "http://192.168.2.101:80/";
             string httpserveruri = "http://"+this.ip+":"+this.port+"/";
+            //string httpserveruri = "http://+:80/";
             try
             {
                 //IPAddress ip = IPAddress.Parse(ServerIP);

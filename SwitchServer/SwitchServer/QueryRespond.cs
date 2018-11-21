@@ -26,7 +26,15 @@ namespace SwitchServer
         {
             string recvdata = o;
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(recvdata);
+            try
+            {
+                doc.LoadXml(recvdata);
+            }
+            catch(Exception ex)
+            {
+                return "指令格式错误！！！" + ex.Message;
+            }
+            
             XmlNode root = doc.DocumentElement;
             string MessageType = root.Name;
             switch (MessageType)
