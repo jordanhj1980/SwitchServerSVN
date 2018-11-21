@@ -8,6 +8,24 @@ namespace manageclientwpf
 {
     public class KeyBoard : NotifyObject
     {
+        public KeyBoard()
+        {
+            grouplist = new ObservableCollection<Group>();
+            hotlinelist = new ObservableCollection<ExtDevice>();
+        }
+        private string _sequence;
+        public string sequence
+        {
+            get { return _sequence; }
+            set
+            {
+                if (_sequence != value)
+                {
+                    _sequence = value;
+                    RaisePropertyChanged("sequence");
+                }
+            }
+        }
         private string _index;
         public string index
         {

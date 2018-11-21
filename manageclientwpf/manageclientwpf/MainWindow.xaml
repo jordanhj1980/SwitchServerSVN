@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:manageclientwpf"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:materialDesignConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
-        Title="MainWindow" Height="600" Width="1200"
+        Title="MainWindow" Height="600" Width="1500"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -39,7 +39,7 @@
             <HierarchicalDataTemplate DataType = "{x:Type local:Group}">
                 
                 <StackPanel Orientation="Vertical" >
-                    <StackPanel Orientation="Horizontal" Margin="10">
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                         <materialDesign:Badged Badge="{Binding memberlist, Converter={StaticResource cvtMemberlist}}">
                             <materialDesign:PackIcon Kind="AccountSupervisor" Width="40" Height="40" VerticalAlignment="Center"/>
                         </materialDesign:Badged>
@@ -69,9 +69,14 @@
             <Label Content="IP地址" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <TextBox x:Name="ipaddr" Text="{Binding IpAddr}" MinWidth="100" Margin="10,0,0,0" VerticalAlignment="Center" />
             <Button x:Name="loginbtn" Content="{Binding LogButtonText}" IsEnabled="{Binding LogState}" Width="100" Click="loginbtn_Click" Margin="50,0,0,0" VerticalAlignment="Center" />
-            <Button x:Name="bindingdata" Content="show" Width="100" Click="bindingdata_Click" Margin="50,0,0,0" VerticalAlignment="Center" />
-            <Button x:Name="adddata" Content="add" Width="100" Click="adddata_Click" Margin="5,0,0,0" VerticalAlignment="Center" />
+            
+            <Button x:Name="addkey" Content="添加键盘" Width="100" Click="addkey_Click" Margin="50,0,0,0" VerticalAlignment="Center" />
+            <Button x:Name="delkey" Content="删除键盘" Width="100" Click="delkey_Click" Margin="5,0,0,0" VerticalAlignment="Center" />
+            
+            <Button x:Name="addgroup" Content="添加分组" Width="100" Click="addgroup_Click" Margin="5,0,0,0" VerticalAlignment="Center" />
+            <Button x:Name="delgroup" Content="删除分组" Width="100" Click="delgroup_Click" Margin="5,0,0,0" VerticalAlignment="Center" />
         </StackPanel>
+        <!--输入输出窗口-->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
             <TextBox x:Name="inputstr" Text="{Binding InputStr}" Height="100" Width="400" Margin="10" Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}" />
             <Button x:Name="inputbtn" Content="输入指令" Click="inputbtn_Click" MaxWidth="100" />
@@ -80,44 +85,59 @@
                      Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}" />
             <Button x:Name="outputclear" Content="清除" Click="outputclear_Click" MaxWidth="100" />
         </StackPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"  Grid.Column="1" Grid.Row="1" Height="500">
+        <!--键盘树信息-->
+        <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                      PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
+                      Grid.Column="1" Grid.Row="1" Height="500">
             <ScrollViewer.Content>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" ScrollViewer.VerticalScrollBarVisibility="Auto" >
                     <TreeView x:Name="Keyboardlist" TreeViewItem.Selected="Keyboardlist_Selected"  Grid.Row="1" Grid.Column="1" />
                 </StackPanel>
             </ScrollViewer.Content>
         </ScrollViewer>
-        <StackPanel x:Name="keyboardview" Grid.Column="2" Grid.Row="1">
+        <!--键盘详细信息-->
+        <StackPanel x:Name="keyboardview" Grid.Column="2" Grid.Row="1" Margin="10">
             <TextBlock Text="调度键盘" HorizontalAlignment="Center" />
-            <DockPanel>
-                <TextBlock Text="名字:"/>
-                <TextBox Text="{Binding SelectedKey.name}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="名字:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedKey.name, Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
             </DockPanel>
-            <DockPanel>
-                <TextBlock Text="MAC:"/>
-                <TextBox Text="{Binding SelectedKey.mac}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="MAC:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedKey.mac, Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
             </DockPanel>
-            <DockPanel>
-                <TextBlock Text="IP:"/>
-                <TextBox Text="{Binding SelectedKey.ip}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="IP:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedKey.ip, Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel Margin="0,5,0,0">
+                <DataGrid x:Name="grouplistgrid" ItemsSource="{Binding SelectedKey.grouplist, Mode=OneWay}" AutoGenerateColumns="False" CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        
+                        <DataGridTextColumn Header="组名" Binding="{Binding groupname, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="列数" Binding="{Binding column, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="描述" Binding="{Binding description, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="成员" Binding="{Binding memberlist, Converter={StaticResource cvtMemberlist}, Mode=OneWay}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </DockPanel>
         </StackPanel>
-
-        <StackPanel x:Name="groupview" Grid.Column="2" Grid.Row="1">
+        <!--分组详细信息-->
+        <StackPanel x:Name="groupview" Grid.Column="2" Grid.Row="1" Margin="10">
             <TextBlock Text="分组信息" HorizontalAlignment="Center" />
-            <DockPanel>
-                <TextBlock Text="组名:"/>
-                <TextBox Text="{Binding SelectedGroup.groupname}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="组名:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedGroup.groupname, Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
             </DockPanel>
-            <DockPanel>
-                <TextBlock Text="列数:"/>
-                <TextBox Text="{Binding SelectedGroup.column}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="列数:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedGroup.column, Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
             </DockPanel>
-            <DockPanel>
-                <TextBlock Text="描述:"/>
-                <TextBox Text="{Binding SelectedGroup.description}" MinWidth="200"/>
+            <DockPanel Margin="0,5,0,0">
+                <TextBlock Text="描述:" Width="40" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedGroup.description,Mode=OneWay}" MinWidth="200" VerticalAlignment="Center"/>
             </DockPanel>
-            <DataGrid x:Name="extdevicegrid" ItemsSource="{Binding SelectedGroup.memberlist}" AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid x:Name="extdevicegrid" ItemsSource="{Binding SelectedGroup.memberlist, Mode=OneWay}" AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="选择">
                         <DataGridTemplateColumn.CellTemplate>
@@ -129,9 +149,9 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="号码" Binding="{Binding callno}"/>
-                    <DataGridTextColumn Header="岗位名称" Binding="{Binding name}"/>
-                    <DataGridTextColumn Header="描述" Binding="{Binding description}"/>
+                    <DataGridTextColumn Header="号码" Binding="{Binding callno, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="岗位名称" Binding="{Binding name, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="描述" Binding="{Binding description, Mode=OneWay}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

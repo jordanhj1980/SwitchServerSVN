@@ -69,14 +69,23 @@ namespace manageclientwpf
                     AllKeyBoard allkeydata;
                     allkeydata = JsonConvert.DeserializeObject<AllKeyBoard>(level2data.data);
                     //keyboardlist = allkeydata.keyboardlist;
-                    foreach (KeyBoard element in allkeydata.keyboardlist)
+                    this.Dispatcher.Invoke(new Action(() =>
                     {
-                        //keyboardlist.Add(element);
-                        this.Dispatcher.Invoke(new Action(() =>
+                        keyboardlist.Clear();
+                        foreach (KeyBoard element in allkeydata.keyboardlist)
                         {
                             keyboardlist.Add(element);
-                        }), null);
-                    }
+                        }
+                    }), null);
+                    //keyboardlist.Clear();
+                    //foreach (KeyBoard element in allkeydata.keyboardlist)
+                    //{
+                    //    //keyboardlist.Add(element);
+                    //    this.Dispatcher.Invoke(new Action(() =>
+                    //    {
+                    //        keyboardlist.Add(element);
+                    //    }), null);
+                    //}
                 }
             }
         }
@@ -141,17 +150,27 @@ namespace manageclientwpf
             return typedata;
         }
 
-        private void bindingdata_Click(object sender, RoutedEventArgs e)
+        private void delkey_Click(object sender, RoutedEventArgs e)
         {
-            Keyboardlist.ItemsSource = keyboardlist;
+            keyboardlist.Remove(testdata.SelectedKey);
         }
 
-        private void adddata_Click(object sender, RoutedEventArgs e)
+        private void addkey_Click(object sender, RoutedEventArgs e)
         {
             KeyBoard keytemp = new KeyBoard();
             keytemp.name = "test";
             keytemp.ip="192.168.2.123";
             keyboardlist.Add(keytemp);
+        }
+
+        private void addgroup_Click(object sender, RoutedEventArgs e)
+        {
+            testdata.SelectedKey.grouplist.Add(new Group());
+        }
+
+        private void delgroup_Click(object sender, RoutedEventArgs e)
+        {
+            testdata.SelectedKey.grouplist.Remove(testdata.SelectedGroup);
         }
 
         private void Keyboardlist_Selected(object sender, RoutedEventArgs e)
@@ -170,8 +189,28 @@ namespace manageclientwpf
                 testdata.SelectedGroup = modelgroup;
                 keyboardview.Visibility = System.Windows.Visibility.Hidden;
                 groupview.Visibility = System.Windows.Visibility.Visible;
+
+                var tv = VisualTreeHelper.GetParent(tvi);
+                System.Windows.Controls.StackPanel tvpanel = tv as StackPanel;
+                ItemsPresenter ip = tvpanel.TemplatedParent as ItemsPresenter;
+                TreeViewItem tvii = ip.TemplatedParent as TreeViewItem;//这是父节点
+                testdata.SelectedKey = tvii.Header as KeyBoard;
+                //var parentelement = tvii.Header as KeyBoard;
+                //parentelement.grouplist.Add(new Group());
             }
         }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.Source = sender;
+            scrollViewer.RaiseEvent(eventArg);
+        }
+
+
+
+
     }
     public struct TypeData
     {
