@@ -113,7 +113,9 @@ namespace SwitchServer
                     respondstr = "LOG#Success#" + loginfo.type.ToString();
                     loginfo.clientsession.Send(respondstr);
                     Console.WriteLine(respondstr);
-                    adminlist.Add(new LogUser(Program.clientmanage, loginfo, Program.conn));
+                    LogUser loguser = new LogUser(Program.clientmanage, loginfo, Program.conn);
+                    loguser.GetGroupExtFromDB();
+                    adminlist.Add(loguser);
                     return true;
                 }
             }
@@ -237,6 +239,7 @@ namespace SwitchServer
         public ClientManage clientmanage;
         public ReportStateHandler handler;
         public List<GroupData> extlist;
+        public NpgsqlConnection conn;
         public LogUser(ClientManage clientmanage,LogInfo loginfo,NpgsqlConnection conn)
         {
             this.clientmanage = clientmanage;
@@ -244,10 +247,11 @@ namespace SwitchServer
             this.pwd = loginfo.pwd;
             this.ip = loginfo.ip;
             this.clientsession = loginfo.clientsession;
+            this.conn = conn;
             this.handler = new ReportStateHandler(ReportState);
             this.clientmanage.ReportStateEvent += this.handler;//订阅状态上报事件
-            
-            GetGroupExtFromDB(conn);//获取对应用户的管理成员
+
+            //GetGroupExtFromDB(conn);//获取对应用户的管理成员
         }
         /// <summary>
         /// 用于在客户端退出时注销事件委托
@@ -273,7 +277,7 @@ namespace SwitchServer
         /// 获取该用户的成员
         /// </summary>
         /// <param name="conn"></param>
-        public void GetGroupExtFromDB(NpgsqlConnection conn)
+        public void GetGroupExtFromDB()
         {
             DataBaseCommand sqlcom = new DataBaseCommand(conn);
             this.extlist = sqlcom.GetGroupExt(this.name, this.pwd);

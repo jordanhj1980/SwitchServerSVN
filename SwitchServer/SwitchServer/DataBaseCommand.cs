@@ -331,8 +331,18 @@ namespace SwitchServer
         {
             StringBuilder sqlstr = new StringBuilder();
             sqlstr.AppendFormat("select deskassign from governer where name = '{0}' and password = '{1}'", name,pwd);
-            NpgsqlCommand sqlcommand = new NpgsqlCommand(sqlstr.ToString(), conn);
-            return sqlcommand.ExecuteScalar().ToString();
+            try
+            {
+                NpgsqlCommand sqlcommand = new NpgsqlCommand(sqlstr.ToString(), conn);
+                string index = sqlcommand.ExecuteScalar().ToString();
+                return index;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetDeskIndex wrong!!!");
+                return "0";
+            }
+            
         }
         /// <summary>
         /// 获取对应用户的可管理设备
@@ -348,11 +358,13 @@ namespace SwitchServer
             StringBuilder sqlstr = new StringBuilder();
             sqlstr.AppendFormat(@"select desk_grp_index,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
                                 and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", index);
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+                {
                     sqldap.Fill(ds);
                     DataTable tbl = ds.Tables[0];//获取第一张表
-                    
+
                     foreach (DataRow row in tbl.Rows)
                     {
                         GroupData groupdata = new GroupData();
@@ -362,7 +374,15 @@ namespace SwitchServer
                         groupdatalist.Add(groupdata);
                     }
                     return groupdatalist;
+                }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetGroupExt wrong:{0}",ex.Message);
+                return groupdatalist;
+            }
+
+            
                 
         }
         /// <summary>
@@ -378,19 +398,27 @@ namespace SwitchServer
             string index = GetDeskIndex(name, pwd);
             StringBuilder sqlstr = new StringBuilder();
             sqlstr.AppendFormat("select distinct callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}' and deskgrp.index = deskgrp_mem.desk_grp_index", index);
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
-                sqldap.Fill(ds);
-                DataTable tbl = ds.Tables[0];//获取第一张表
-
-                foreach (DataRow row in tbl.Rows)
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
                 {
-                    GroupData groupdata = new GroupData();
-                    groupdata.groupid = "B";
-                    groupdata.extid = row["callno"].ToString();
-                    //extinfo.grade = Convert.ToInt32(row["class"]);
-                    groupdatalist.Add(groupdata);
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
+
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        GroupData groupdata = new GroupData();
+                        groupdata.groupid = "B";
+                        groupdata.extid = row["callno"].ToString();
+                        //extinfo.grade = Convert.ToInt32(row["class"]);
+                        groupdatalist.Add(groupdata);
+                    }
+                    return groupdatalist;
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetBroadCast wrong:{0}", ex.Message);
                 return groupdatalist;
             }
 
@@ -407,21 +435,30 @@ namespace SwitchServer
             StringBuilder sqlstr = new StringBuilder();
 
             sqlstr.AppendFormat("select callno from desk_totalmem where desk_index = '{0}' and key = true", index);
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
-                sqldap.Fill(ds);
-                DataTable tbl = ds.Tables[0];//获取第一张表
-
-                foreach (DataRow row in tbl.Rows)
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
                 {
-                    GroupData groupdata = new GroupData();
-                    groupdata.groupid = "0";//表示键权电话
-                    groupdata.extid = row["callno"].ToString();
-                    //extinfo.grade = Convert.ToInt32(row["class"]);
-                    keylist.Add(groupdata);
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
+
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        GroupData groupdata = new GroupData();
+                        groupdata.groupid = "0";//表示键权电话
+                        groupdata.extid = row["callno"].ToString();
+                        //extinfo.grade = Convert.ToInt32(row["class"]);
+                        keylist.Add(groupdata);
+                    }
+                    return keylist;
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetKeyExt wrong: {0}",ex.Message);
                 return keylist;
             }
+            
         }
         /// <summary>
         /// 获取中继设备列表
@@ -435,21 +472,30 @@ namespace SwitchServer
             StringBuilder sqlstr = new StringBuilder();
 
             sqlstr.AppendFormat("select callno from member where type = 'trunk'");
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
-                sqldap.Fill(ds);
-                DataTable tbl = ds.Tables[0];//获取第一张表
-
-                foreach (DataRow row in tbl.Rows)
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
                 {
-                    GroupData groupdata = new GroupData();
-                    groupdata.groupid = "T";//表示中继
-                    groupdata.extid = row["callno"].ToString();
-                    //extinfo.grade = Convert.ToInt32(row["class"]);
-                    keylist.Add(groupdata);
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
+
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        GroupData groupdata = new GroupData();
+                        groupdata.groupid = "T";//表示中继
+                        groupdata.extid = row["callno"].ToString();
+                        //extinfo.grade = Convert.ToInt32(row["class"]);
+                        keylist.Add(groupdata);
+                    }
+                    return keylist;
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetTrunk wrong:{0}", ex.Message);
                 return keylist;
             }
+            
         }
         
         /// <summary>
@@ -496,27 +542,35 @@ namespace SwitchServer
             sqlstr.AppendFormat("select cdrid,callid,type,timestart,timeend,cpn,cdpn,duration from cdr order by index desc limit 50");
 
             DataSet ds = new DataSet();
-
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
-                sqldap.Fill(ds);
-                DataTable tbl = ds.Tables[0];//获取第一张表
-
-                foreach (DataRow row in tbl.Rows)
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
                 {
-                    CDR member = new CDR();
-                    member.Cdrid = row["cdrid"].ToString();
-                    member.callid = row["callid"].ToString();
-                    member.type = row["type"].ToString();
-                    member.TimeStart = row["timestart"].ToString();
-                    member.TimeEnd = row["timeend"].ToString();
-                    member.CPN = row["cpn"].ToString();
-                    member.CDPN = row["cdpn"].ToString();
-                    member.Duration = row["duration"].ToString();
-                    cdrlist.Add(member);
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
+
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        CDR member = new CDR();
+                        member.Cdrid = row["cdrid"].ToString();
+                        member.callid = row["callid"].ToString();
+                        member.type = row["type"].ToString();
+                        member.TimeStart = row["timestart"].ToString();
+                        member.TimeEnd = row["timeend"].ToString();
+                        member.CPN = row["cpn"].ToString();
+                        member.CDPN = row["cdpn"].ToString();
+                        member.Duration = row["duration"].ToString();
+                        cdrlist.Add(member);
+                    }
                 }
+                return cdrlist;
             }
-            return cdrlist;
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetCDR wrong:{0}", ex.Message);
+                return cdrlist;
+            }
+            
         }
         /// <summary>
         /// 插入用户操作记录
@@ -565,23 +619,31 @@ namespace SwitchServer
             sqlstr.AppendFormat("select name,actiontype,time,from userlog");
 
             DataSet ds = new DataSet();
-
-            using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+            try
             {
-                sqldap.Fill(ds);
-                DataTable tbl = ds.Tables[0];//获取第一张表
-
-                foreach (DataRow row in tbl.Rows)
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
                 {
-                    UserLog member = new UserLog();
-                    member.name = row["name"].ToString();
-                    member.actiontype = row["actiontype"].ToString();
-                    member.time = row["time"].ToString();
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
 
-                    userloglist.Add(member);
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        UserLog member = new UserLog();
+                        member.name = row["name"].ToString();
+                        member.actiontype = row["actiontype"].ToString();
+                        member.time = row["time"].ToString();
+
+                        userloglist.Add(member);
+                    }
                 }
+                return userloglist;
             }
-            return userloglist;
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetUserLog wrong:{0}", ex.Message);
+                return userloglist;
+            }
+            
         }
     }
 }
