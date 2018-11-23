@@ -33,8 +33,9 @@ namespace SwitchServer
             //httpserver = new HttpServer("192.168.2.101", "80");
             httpserver = new HttpServer("+", "80");
             httpserver.StartHttpServer();
-            //websocketserver = new SimpleWebSocketServer("192.168.2.101","1020");
+
             websocketserver = new SimpleWebSocketServer("localhost", "1020");
+            //websocketserver = new SimpleWebSocketServer("localhost", "1030");
             websocketserver.Start();
             //string connString = @"Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
             string connString = @"Host=192.168.2.10;Port=5432;Username=postgres;Password=postgres;Database=dispatch";

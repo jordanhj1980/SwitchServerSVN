@@ -88,7 +88,7 @@ namespace SwitchServer
             title = title.Substring(0, title.Length - 1);
             value = value.Substring(0, value.Length - 1);
 
-            sqlstr.AppendFormat("insert into governer ({0}) select {1} from governer where not exists (select * from governer where name = '{2}') limit 1",
+            sqlstr.AppendFormat("insert into governer ({0}) select {1} where not exists (select * from governer where name = '{2}') limit 1",
                                 title, value, userdata.name);
             try
             {

@@ -114,7 +114,7 @@ namespace SwitchServer
                     loginfo.clientsession.Send(respondstr);
                     Console.WriteLine(respondstr);
                     LogUser loguser = new LogUser(Program.clientmanage, loginfo, Program.conn);
-                    loguser.GetGroupExtFromDB();
+                    //loguser.GetGroupExtFromDB();
                     adminlist.Add(loguser);
                     return true;
                 }
@@ -159,7 +159,9 @@ namespace SwitchServer
                     respondstr = "LOG#Success#" + loginfo.type.ToString();
                     loginfo.clientsession.Send(respondstr);
                     Console.WriteLine(respondstr);
-                    loguserlist.Add(new LogUser(Program.clientmanage, loginfo, Program.conn));
+                    LogUser loguser = new LogUser(Program.clientmanage, loginfo, Program.conn);
+                    loguser.GetGroupExtFromDB();
+                    loguserlist.Add(loguser);
 
                     return true;
                 }
@@ -171,7 +173,9 @@ namespace SwitchServer
                 respondstr = "LOG#Success#" + loginfo.type.ToString();
                 loginfo.clientsession.Send(respondstr);
                 Console.WriteLine(respondstr);
-                loguserlist.Add(new LogUser(Program.clientmanage, loginfo, Program.conn));
+                LogUser loguser = new LogUser(Program.clientmanage, loginfo, Program.conn);
+                loguser.GetGroupExtFromDB();
+                loguserlist.Add(loguser);
                 return true;
             }
         }

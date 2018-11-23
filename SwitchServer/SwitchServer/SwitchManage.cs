@@ -20,11 +20,14 @@ namespace SwitchServer
     {
         //软交换列表
         public static List<SwitchDev> switchlist = new List<SwitchDev>();
+        public NpgsqlConnection conn;
         public event CommandSendHandler CommandSendEvent;
         public SwitchManage(NpgsqlConnection conn)
         {
-            DataBaseCommand sqlcom = new DataBaseCommand(conn);
-            switchlist = sqlcom.GetAllSwitch(this);
+            this.conn = conn;
+            UpdataSwitchList();
+            //DataBaseCommand sqlcom = new DataBaseCommand(conn);
+            //switchlist = sqlcom.GetAllSwitch(this);
         }
         public void CommandSend(List<string> extid,TypeData message)
         {
@@ -32,6 +35,11 @@ namespace SwitchServer
             {
                 CommandSendEvent(extid,message);
             }
+        }
+        public void UpdataSwitchList()
+        {
+            DataBaseCommand sqlcom = new DataBaseCommand(conn);
+            switchlist = sqlcom.GetAllSwitch(this);
         }
         /// <summary>
         /// 根据号码查找软交换

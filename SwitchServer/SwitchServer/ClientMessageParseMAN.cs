@@ -538,7 +538,7 @@ namespace SwitchServer
             }
             AddKeyBoardRespond responddata = new AddKeyBoardRespond();
             DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
-
+            responddata.sequence = structdata.sequence;
             string reason;
             string index;
             if (sqlcom.AddKeyboard(structdata, out reason ,out index))

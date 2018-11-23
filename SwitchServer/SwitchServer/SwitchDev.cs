@@ -232,6 +232,8 @@ namespace SwitchServer
 
                     sqlcom.UpdateSwitchDev(this.index, ParseQueryDevice.ExtList);
 
+                    Program.switchmanage.UpdataSwitchList();
+
                     break;
 
                 default:

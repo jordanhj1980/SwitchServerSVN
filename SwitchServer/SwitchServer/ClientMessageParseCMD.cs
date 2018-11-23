@@ -137,6 +137,10 @@ namespace SwitchServer
             extlist.Add(call.fromid);
             string type;
             switchdevice = Program.switchmanage.GetSwitchFromExtid(extlist,out type);
+            if(switchdevice==null)
+            {
+                Console.WriteLine("找不到软交换!!!");
+            }
             string lineid = switchdevice.GetLineidFromExtid(call.fromid);
             AssignNightService command = new AssignNightService(lineid, call.toid);
             command.Off();

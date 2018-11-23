@@ -71,7 +71,7 @@ namespace SwitchServer
             title = "name,ip,mac";
             value = "'" + structdata.name + "','" + structdata.ip + "','" + structdata.mac + "'";
 
-            sqlstr.AppendFormat("insert into desk ({0}) select {1} from desk where not exists (select * from desk where name = '{2}') limit 1 RETURNING index",
+            sqlstr.AppendFormat("insert into desk ({0}) select {1} where not exists (select * from desk where name = '{2}') limit 1 RETURNING index",
                     title, value, structdata.name);
 
             try
@@ -91,10 +91,10 @@ namespace SwitchServer
                 }
                 else
                 {
-                    EditKeyboard(structdata, out reason);
+                    
                     //reason = "AddKeyboard存在重复！";
                     index = structdata.index;
-                    return true;
+                    return (EditKeyboard(structdata, out reason));
                 }
 
             }
