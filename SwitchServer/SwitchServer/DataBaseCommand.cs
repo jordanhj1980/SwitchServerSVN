@@ -16,9 +16,9 @@ namespace SwitchServer
             try
             {
 
-                if (conn.State != System.Data.ConnectionState.Open)
+                if (this.conn.State != System.Data.ConnectionState.Open)
                 {
-                    conn.Open();
+                    this.conn.Open();
                 }    
             } 
             catch(Exception ex)
@@ -317,6 +317,7 @@ namespace SwitchServer
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                this.conn.Close();
                 return false;
             }
         }

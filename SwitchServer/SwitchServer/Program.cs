@@ -37,8 +37,8 @@ namespace SwitchServer
             websocketserver = new SimpleWebSocketServer("localhost", "1020");
             //websocketserver = new SimpleWebSocketServer("localhost", "1030");
             websocketserver.Start();
-            //string connString = @"Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
-            string connString = @"Host=192.168.2.10;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
+            string connString = @"Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
+            //string connString = @"Host=192.168.2.10;Port=5432;Username=postgres;Password=postgres;Database=dispatch";
             conn = new NpgsqlConnection(connString);
             try
             {
@@ -50,7 +50,6 @@ namespace SwitchServer
             {
                 Console.WriteLine("数据库连接失败");
                 Console.WriteLine(ex.Message);
-                return;
             }
 
             Initialize();

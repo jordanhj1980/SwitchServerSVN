@@ -25,6 +25,26 @@ namespace SwitchServer
             }
         }
         /// <summary>
+        /// 通过session中的IP地址找到列表中相同IP地址的用户，返回该用户的session
+        /// </summary>
+        /// <param name="clientsession"></param>
+        /// <returns></returns>
+        public WebSocketSession SearchFromeIP(WebSocketSession clientsession)
+        {
+            LogUser finduser;
+            finduser = loguserlist.Find(c => c.clientsession.RemoteEndPoint.Address.Equals(clientsession.RemoteEndPoint.Address));
+            if(finduser!=null)
+            {
+                return finduser.clientsession;
+            }
+            finduser = adminlist.Find(c => c.clientsession.RemoteEndPoint.Address.Equals(clientsession.RemoteEndPoint.Address));
+            if (finduser != null)
+            {
+                return finduser.clientsession;
+            }
+            return null;
+        }
+        /// <summary>
         /// 在全局的用户列表Program.loglist中检查当前的sessionid是否已存在
         /// </summary>
         public bool SessionCheck(WebSocketSession clientsession,out string type)
@@ -99,11 +119,24 @@ namespace SwitchServer
                 //如果找到表示已登录
                 if (finduser != null)
                 {
-                    Console.WriteLine("用户已登录！！！");
-                    respondstr = "LOG#Already";
-                    loginfo.clientsession.Send(respondstr);
-                    Console.WriteLine(respondstr);
-                    return false;
+                    if (finduser.clientsession.RemoteEndPoint.Address.Equals(loginfo.clientsession.RemoteEndPoint.Address))
+                    {
+                        finduser.clientsession.Close();
+                        finduser.clientsession = loginfo.clientsession;
+                        Console.WriteLine("重连成功！！！");
+                        respondstr = "LOG#Success#" + loginfo.type.ToString();
+                        loginfo.clientsession.Send(respondstr);
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("用户已登录！！！");
+                        respondstr = "LOG#Already";
+                        loginfo.clientsession.Send(respondstr);
+                        Console.WriteLine(respondstr);
+                        return false;
+                    }
+                    
                 }
                 //如果没找到表示新用户登录
                 else
@@ -145,11 +178,24 @@ namespace SwitchServer
                 //如果找到表示已登录
                 if (finduser != null)
                 {
-                    Console.WriteLine("用户已登录！！！");
-                    respondstr = "LOG#Already";
-                    loginfo.clientsession.Send(respondstr);
-                    Console.WriteLine(respondstr);
-                    return false;
+                    if (finduser.clientsession.RemoteEndPoint.Address.Equals(loginfo.clientsession.RemoteEndPoint.Address))
+                    {
+                        finduser.clientsession.Close();
+                        finduser.clientsession = loginfo.clientsession;
+                        Console.WriteLine("重连成功！！！");
+                        respondstr = "LOG#Success#" + loginfo.type.ToString();
+                        loginfo.clientsession.Send(respondstr);
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("用户已登录！！！");
+                        respondstr = "LOG#Already";
+                        loginfo.clientsession.Send(respondstr);
+                        Console.WriteLine(respondstr);
+                        return false;
+                    }
+                    
                 }
                 //如果没找到表示新用户登录
                 else
@@ -252,9 +298,10 @@ namespace SwitchServer
             this.ip = loginfo.ip;
             this.clientsession = loginfo.clientsession;
             this.conn = conn;
+            this.extlist = new List<GroupData>();
             this.handler = new ReportStateHandler(ReportState);
             this.clientmanage.ReportStateEvent += this.handler;//订阅状态上报事件
-
+            
             //GetGroupExtFromDB(conn);//获取对应用户的管理成员
         }
         /// <summary>

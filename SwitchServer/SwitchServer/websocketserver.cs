@@ -15,26 +15,48 @@ namespace SwitchServer
         private string ip;
         private int port;
         private WebSocketServer ws = null;//SuperWebSocket中的WebSocketServer对象
+        private IEnumerable<WebSocketSession> sessionlist;
+        
+        
+        //private static System.Windows.Threading.DispatcherTimer readDataTimer;
 
-        
-        
+
+        /// <summary>
+        /// 心跳计时器响应
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        //public static void timeCycle(object sender, EventArgs e)
+        //{
+
+        //}
+
+
         public SimpleWebSocketServer(string ip,string port)
         {
             this.ip = ip;
             this.port = Convert.ToInt32(port);
             ws = new WebSocketServer();//实例化WebSocketServer
-
-
+            //添加心跳计时器
+            //readDataTimer = new System.Windows.Threading.DispatcherTimer();
+            //readDataTimer.Tick += new EventHandler(timeCycle);
+            //readDataTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            //readDataTimer.Start();
             //添加事件侦听
-            
+     
             ws.NewSessionConnected += ws_NewSessionConnected;//有新会话握手并连接成功
             ws.SessionClosed += ws_SessionClosed;//有会话被关闭 可能是服务端关闭 也可能是客户端关闭
             ws.NewMessageReceived += ws_NewMessageReceived;//有新文本消息被接收
             ws.NewDataReceived += ws_NewDataReceived;//有新二进制消息被接收
         }
+        void GetAllSession()
+        {
+            sessionlist = ws.GetAllSessions();
+        }
         void ws_NewSessionConnected(WebSocketSession session)
         {
             Console.WriteLine("{0:HH:MM:ss}  与客户端:{1}创建新会话", DateTime.Now, session.RemoteEndPoint);
+
         }
 
         void ws_SessionClosed(WebSocketSession session, SuperSocket.SocketBase.CloseReason value)
@@ -57,6 +79,17 @@ namespace SwitchServer
             string type;
             string name;
             Console.WriteLine(value);
+            if(value.Equals("BEAT"))
+            {
+                return;
+            }
+            //WebSocketSession logsession = Program.clientmanage.SearchFromeIP(session);
+            //if (logsession != null)
+            //{
+            //    Program.clientmanage.GetUserBySessionID(logsession);
+            //    logsession.Close();
+            //}
+            //session已存在
             if (Program.clientmanage.SessionCheck(session,out type))
             {
                 if(type.Equals("Admin"))
@@ -78,7 +111,7 @@ namespace SwitchServer
                 
                 //Console.WriteLine("{0:HH:MM:ss}  获取到客户端:{1} 发送的文本消息长度为:{2}", DateTime.Now, session.RemoteEndPoint, value.Length);
             }
-            else
+            else//新的连接
             {
                 //未登录用户，解析LOG命令
                 if (MessageParse.ParseLOGMessage(value,out type,out name))
@@ -134,8 +167,9 @@ namespace SwitchServer
             s.Ip = "Any";
             s.Port = this.port;
             s.Mode = SuperSocket.SocketBase.SocketMode.Tcp;
-            //s.ClearIdleSession = true;
-            //s.ClearIdleSessionInterval = 50;
+            //s.ClearIdleSession = true;//每ClearIdleSessionInterval秒执行一次清理90秒没数据传送的连接
+            //s.ClearIdleSessionInterval = 1;
+            //s.IdleSessionTimeOut = 11;
             s.ReceiveBufferSize = 50000;
             s.SendBufferSize = 50000;
 

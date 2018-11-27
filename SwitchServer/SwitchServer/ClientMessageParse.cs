@@ -50,14 +50,24 @@ namespace SwitchServer
         public TypeData ParseType(string datastr)
         {
             TypeData typedata;
+            typedata.type = "Heart";
+            typedata.data = "Heart";
             int indexstart = 0;
             int indexend = 0;
-            indexend = datastr.IndexOf('#');
-            //获取第一个#前的数据
-            typedata.type = datastr.Substring(indexstart, indexend - indexstart);
-            //获取第一个#后的数据
-            indexstart = indexend + 1;
-            typedata.data = datastr.Substring(indexstart);
+            try
+            {
+                indexend = datastr.IndexOf('#');
+                //获取第一个#前的数据
+                typedata.type = datastr.Substring(indexstart, indexend - indexstart);
+                //获取第一个#后的数据
+                indexstart = indexend + 1;
+                typedata.data = datastr.Substring(indexstart);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("ParseType wrong:{0}", ex.Message);
+            }
+            
 
             return typedata;
         }

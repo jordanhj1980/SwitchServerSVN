@@ -122,9 +122,14 @@ namespace SwitchServer
         {
             IpTypeData data = (IpTypeData)o;
             SwitchDev switcher = SwitchManage.switchlist.Find(c => c.ip.Equals(data.ip));
-            switcher.MessageParse(data.typedata);
-            
-            
+            if(switcher==null)
+            {
+                Console.WriteLine("软交换不存在！！");
+            }
+            else
+            {
+                switcher.MessageParse(data.typedata);
+            }            
         }
         
     }

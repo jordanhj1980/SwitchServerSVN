@@ -650,6 +650,7 @@ namespace SwitchServer
                 responddata.result = "Success";
                 respondstr = "MAN#DELKEYBOARD#" + JsonConvert.SerializeObject(responddata);
                 clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
             }
             else
             {
