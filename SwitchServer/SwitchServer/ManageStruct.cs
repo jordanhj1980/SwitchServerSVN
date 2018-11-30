@@ -176,6 +176,15 @@ namespace SwitchServer
         public string ip;
         public List<Group> grouplist;
         public List<DevStruct> hotlinelist;
+        public List<broadcast> broadcastlist;
+        public List<trunkdev> trunklist;
+        public AddKeyBoard()
+        {
+            grouplist = new List<Group>();
+            hotlinelist = new List<DevStruct>();
+            broadcastlist = new List<broadcast>();
+            trunklist = new List<trunkdev>();
+        }
     }
     public class DelKeyBoard
     {
@@ -186,6 +195,31 @@ namespace SwitchServer
     {
         public string sequence;
     }
+    public class broadcastmember
+    {
+        public string callno;
+        public string name;
+        //public string broadcast_index;
+    }
+    public class broadcast
+    {
+        public string index;
+        public string name;
+        public List<broadcastmember> bmemberlist;
+        public broadcast()
+        {
+            bmemberlist = new List<broadcastmember>();
+        }
+    }
+    public class trunkdev
+    {
+        public string trunkid;
+        public string name;
+        public string bindingnumber;
+    }
+    /// <summary>
+    /// 调度键盘
+    /// </summary>
     public class Keyboard
     {
         public string index;
@@ -194,10 +228,61 @@ namespace SwitchServer
         public string ip;
         public List<Group> grouplist;
         public List<DevStruct> hotlinelist;
+        public List<broadcast> broadcastlist;
+        public List<trunkdev> trunklist;
+        public Keyboard()
+        {
+            grouplist = new List<Group>();
+            hotlinelist = new List<DevStruct>();
+            broadcastlist = new List<broadcast>();
+            trunklist = new List<trunkdev>();
+        }
     }
     public class GetAllKeyboardsp
     {
         public string sequence;
         public List<Keyboard> keyboardlist;
+    }
+    public class GetPhoneBookCmd
+    {
+        public string sequence;
+    }
+    public class contact
+    {
+        public string callno;
+        public string name;
+    }
+    public class departmentstruct
+    {
+        public string department;
+        public List<contact>memberlist;
+        public departmentstruct()
+        {
+            memberlist = new List<contact>();
+        }
+    }
+    public class GetPhoneBooksp
+    {
+        public string sequence;
+        public List<departmentstruct> departmentlist;
+        public GetPhoneBooksp()
+        {
+            departmentlist = new List<departmentstruct>();
+        }
+    }
+    public class EditPhoneBookCmd
+    {
+        public string sequence;
+        public List<departmentstruct> departmentlist;
+        public EditPhoneBookCmd()
+        {
+            departmentlist = new List<departmentstruct>();
+        }
+    }
+    public class EditPhoneBooksp
+    {
+        public string sequence;
+        public string result;
+        public string reason;
     }
 }

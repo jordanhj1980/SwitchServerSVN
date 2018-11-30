@@ -238,7 +238,37 @@ namespace SwitchServer
             //WebSocketSession session = new WebSocketSession();
             //string jasonstr = JsonConvert.SerializeObject(temp);
             //new ClientMessageParse(session).GetUser(jasonstr);
+            //---------------get phone book
+            //GetPhoneBooksp responddata = new GetPhoneBooksp();
+            //DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+            //sqlcom.GetPhoneBook(out responddata);
+            //---------------edit phonebook
+            //EditPhoneBookCmd editcmd = new EditPhoneBookCmd();
 
+            //departmentstruct department;
+            //contact member;
+            //for(int i=0;i<2;i++)
+            //{
+            //    department = new departmentstruct();
+            //    department.department="7"+i.ToString();
+            //    for(int j=0;j<5;j++)
+            //    {
+            //        member = new contact ();
+            //        member.callno="111"+j.ToString();
+            //        member.name="1111"+j.ToString();
+            //        department.memberlist.Add(member);
+            //    }
+            //    editcmd.departmentlist.Add(department);
+            //}
+            //DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+            //string reason;
+            //sqlcom.EditPhoneBook(editcmd,out reason);
+            //--------------------get keyboardlist
+            //GetAllKeyboardsp cmd = new GetAllKeyboardsp();
+
+            //DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+            
+            //sqlcom.GetAllKeyboard(out cmd);
         }
     }
 }

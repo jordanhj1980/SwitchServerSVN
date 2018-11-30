@@ -288,6 +288,8 @@ namespace SwitchServer
 
             StreamWriter myStreamWriter = new StreamWriter(myRequestStream);
             myStreamWriter.Write(xmlstr);
+            Console.WriteLine("发送指令：");
+            Console.WriteLine(xmlstr);
             myStreamWriter.Close();
 
             if (PostData.type.Equals("Transfer"))
@@ -303,9 +305,10 @@ namespace SwitchServer
                 sr.Close();
                 PostData.data = resultstr;
             }
-            catch (Exception e)
+            //catch (Exception e)
+            catch
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
             }
             try
             {

@@ -26,6 +26,11 @@ namespace SwitchServer
         public string menuid;
         public string voicefile;
     }
+    public class AssignGroupCMD
+    {
+        public string distribution;
+        public List<string> devlist;
+    }
     /// <summary>
     /// 通话记录结构体
     /// </summary>

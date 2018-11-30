@@ -749,6 +749,8 @@ namespace SwitchServer
             }
             else
             {
+                commandhead.AppendChild(lv1body);
+                command.AppendChild(commandhead);
                 XmlCommandString = "";
             }
         }
@@ -795,6 +797,17 @@ namespace SwitchServer
                 lv2body.Add(bodyelement);
             }
 
+            BuildXML();
+        }
+    }
+    public class ClearGroup : Assign
+    {
+        XmlElement bodyelement;
+        public ClearGroup(string groupid)
+        {
+            lv1body = command.CreateElement("group");
+            lv1body.SetAttribute("id", groupid);
+            bodyelement = command.CreateElement("distribution");           
             BuildXML();
         }
     }

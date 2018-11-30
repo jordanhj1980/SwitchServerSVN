@@ -42,32 +42,35 @@ namespace SwitchServer
                     case "Call"://解析拨号指令，给软交换发送对应的指令
                         ParseCall(commanddata.data);
                         break;
-                    case "Visitor":
+                    case "Visitor"://来电转接分机
                         ParseVisitor(commanddata.data);
                         break;
-                    case "CallOut":
+                    case "CallOut"://拨打外线电话
                         ParseCallOut(commanddata.data);
                         break;
-                    case "Monitor":
+                    case "Monitor"://监听
                         ParseMonitor(commanddata.data);
                         break;
-                    case "NightServiceOn":
+                    case "NightServiceOn"://夜服开启
                         ParseNightServiceOn(commanddata.data);
                         break;
-                    case "NightServiceOff":
+                    case "NightServiceOff"://夜服关闭
                         ParseNightServiceOff(commanddata.data);
                         break;
-                    case "GETCDR":
+                    case "GETCDR"://获取通话记录
                         ParseGetCdr(commanddata.data);
                         break;
-                    case "Hold":
+                    case "Hold"://通话保持
                         ParseHold(commanddata.data);
                         break;
-                    case "Unhold":
+                    case "Unhold"://取消保持
                         ParseUnhold(commanddata.data);
                         break;
-                    case "MenuToExt":
+                    case "MenuToExt"://语音接入分机
                         ParseMenuToExt(commanddata.data);
+                        break;
+                    case "AssignGroup"://分组设置
+                        ParseAssignGroup(commanddata.data);
                         break;
                     case "":
                         break;
@@ -425,6 +428,46 @@ namespace SwitchServer
             extlist.Add("204");
             Program.switchmanage.CommandSend(extlist, com);
             return true;
+        }
+        public bool ParseAssignGroup(string data)
+        {
+            AssignGroupCMD assigngroup = new AssignGroupCMD();
+            try
+            {
+                assigngroup = JsonConvert.DeserializeObject<AssignGroupCMD>(data);
+            }
+            catch
+            {
+                string respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            if((assigngroup.devlist.Count==0)||(assigngroup.devlist==null))
+            {
+                ClearGroup command = new ClearGroup("2");
+                string commandstr = command.XmlCommandString;
+                TypeData com;
+                com.type = "AssignGroup";
+                com.data = commandstr;
+                List<string> extlist = new List<string>();
+                extlist.Add("204");
+                Program.switchmanage.CommandSend(extlist, com);
+                return true;
+            }
+            else
+            {
+                AssignGroup command = new AssignGroup("2", assigngroup.devlist, assigngroup.distribution);
+                string commandstr = command.XmlCommandString;
+                TypeData com;
+                com.type = "AssignGroup";
+                com.data = commandstr;
+                List<string> extlist = new List<string>();
+                extlist.AddRange(assigngroup.devlist);
+                Program.switchmanage.CommandSend(extlist, com);
+                return true;
+            }
+            
         }
     }
 }

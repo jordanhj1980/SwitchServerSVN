@@ -86,6 +86,7 @@
     <Compile Include="ClientMessageParseCMD.cs" />
     <Compile Include="DataBaseCommand.cs" />
     <Compile Include="DataBaseCommandKeyboard.cs" />
+    <Compile Include="DataBaseCommandPhoneBook.cs" />
     <Compile Include="DataBaseCommandSwitch.cs" />
     <Compile Include="DataBaseCommandUser.cs" />
     <Compile Include="HttpServer.cs" />

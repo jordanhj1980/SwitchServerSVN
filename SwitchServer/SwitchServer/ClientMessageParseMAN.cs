@@ -73,6 +73,12 @@ namespace SwitchServer
                     case "DELKEYBOARD"://解析删除调度键盘
                         DelKeyboard(commanddata.data);
                         break;
+                    case "GETPHONEBOOK"://获取电话本
+                        GetPhoneBook(commanddata.data);
+                        break;
+                    case "EDITPHONEBOOK":
+                        EditPhoneBook(commanddata.data);
+                        break;
                     case "":
                         break;
 
@@ -659,6 +665,77 @@ namespace SwitchServer
                 respondstr = "MAN#DELKEYBOARD#" + JsonConvert.SerializeObject(responddata);
                 clientsession.Send(respondstr);
                 Console.WriteLine("DelKeyboard Wrong!!!");
+            }
+            return true;
+        }
+        public bool GetPhoneBook(string data)
+        {
+            GetPhoneBookCmd structdata;
+            string respondstr;
+            try
+            {
+                structdata = JsonConvert.DeserializeObject<GetPhoneBookCmd>(data);
+            }
+            catch
+            {
+                respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            GetPhoneBooksp responddata = new GetPhoneBooksp();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+
+            
+            if (sqlcom.GetPhoneBook(out responddata))
+            {
+                responddata.sequence = structdata.sequence;
+                respondstr = "MAN#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            else
+            {
+                Console.WriteLine("GetPhoneBook Wrong!!!");
+            }
+            return true;
+        }
+        public bool EditPhoneBook(string data)
+        {
+            EditPhoneBookCmd structdata;
+            string respondstr;
+            try
+            {
+                structdata = JsonConvert.DeserializeObject<EditPhoneBookCmd>(data);
+            }
+            catch
+            {
+                respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            EditPhoneBooksp responddata = new EditPhoneBooksp();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+
+            string reason;
+            if (sqlcom.EditPhoneBook(structdata,out reason))
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Success";
+                respondstr = "MAN#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            else
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Fail";
+                respondstr = "MAN#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
             }
             return true;
         }

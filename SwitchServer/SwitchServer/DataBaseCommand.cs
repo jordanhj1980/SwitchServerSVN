@@ -340,7 +340,7 @@ namespace SwitchServer
             }
             catch(Exception ex)
             {
-                Console.WriteLine("GetDeskIndex wrong!!!");
+                Console.WriteLine("GetDeskIndex wrong!!!"+ex.Message);
                 return "0";
             }
             
