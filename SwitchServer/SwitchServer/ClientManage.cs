@@ -331,8 +331,9 @@ namespace SwitchServer
         public void GetGroupExtFromDB()
         {
             DataBaseCommand sqlcom = new DataBaseCommand(conn);
-            this.extlist = sqlcom.GetGroupExt(this.name, this.pwd);
-            this.extlist.AddRange(sqlcom.GetKeyExt(this.name, this.pwd));
+            string desk_index = sqlcom.GetDeskIndex(this.name, this.pwd);
+            this.extlist = sqlcom.GetGroupExt(desk_index);
+            this.extlist.AddRange(sqlcom.GetKeyExt(desk_index));
 
             this.extlist.AddRange(sqlcom.GetTrunk());
         }

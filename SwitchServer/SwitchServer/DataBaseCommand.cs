@@ -351,14 +351,13 @@ namespace SwitchServer
         /// <param name="name"></param>
         /// <param name="pwd"></param>
         /// <returns></returns>
-        public List<GroupData> GetGroupExt(string name,string pwd)
+        public List<GroupData> GetGroupExt(string desk_index)
         {
             List<GroupData> groupdatalist = new List<GroupData>();
             DataSet ds = new DataSet();
-            string index = GetDeskIndex(name,pwd);
             StringBuilder sqlstr = new StringBuilder();
             sqlstr.AppendFormat(@"select desk_grp_index,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
-                                and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", index);
+                                and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", desk_index);
             try
             {
                 using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
@@ -387,18 +386,18 @@ namespace SwitchServer
                 
         }
         /// <summary>
-        /// 获取广播组成员，暂定所有分机
+        /// 获取广播组成员
         /// </summary>
         /// <param name="name"></param>
         /// <param name="pwd"></param>
         /// <returns></returns>
-        public List<GroupData> GetBroadCast(string name, string pwd)
+        public List<Broadcast> GetBroadCast(string desk_index)
         {
-            List<GroupData> groupdatalist = new List<GroupData>();
+            List<Broadcast> broadcastlist = new List<Broadcast>();
             DataSet ds = new DataSet();
-            string index = GetDeskIndex(name, pwd);
+            
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat("select distinct callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}' and deskgrp.index = deskgrp_mem.desk_grp_index", index);
+            sqlstr.AppendFormat("select name,index from broadcast where desk_index = '{0}'", desk_index);
             try
             {
                 using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
@@ -408,34 +407,65 @@ namespace SwitchServer
 
                     foreach (DataRow row in tbl.Rows)
                     {
-                        GroupData groupdata = new GroupData();
-                        groupdata.groupid = "B";
-                        groupdata.extid = row["callno"].ToString();
-                        //extinfo.grade = Convert.ToInt32(row["class"]);
-                        groupdatalist.Add(groupdata);
+                        Broadcast broadcastdata = new Broadcast();
+                        broadcastdata.name = row["name"].ToString();
+                        string broadcast_index = row["index"].ToString();
+                        GetBroadcastMember(broadcast_index,out broadcastdata.bmemberlist);
+
+                        broadcastlist.Add(broadcastdata);
                     }
-                    return groupdatalist;
+                    return broadcastlist;
                 }
             }
             catch(Exception ex)
             {
                 Console.WriteLine("GetBroadCast wrong:{0}", ex.Message);
-                return groupdatalist;
+                return broadcastlist;
             }
 
         }
+        //public List<broadcastmember>GetBroadcastMember(string broadcast_index)
+        //{
+        //    List<broadcastmember> bmemberlist = new List<broadcastmember>();
+        //    DataSet ds = new DataSet();
+
+        //    StringBuilder sqlstr = new StringBuilder();
+        //    sqlstr.AppendFormat("select callno,name from broadcast_member where broadcast_index = '{0}'", broadcast_index);
+        //    try
+        //    {
+        //        using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+        //        {
+        //            sqldap.Fill(ds);
+        //            DataTable tbl = ds.Tables[0];//获取第一张表
+
+        //            foreach (DataRow row in tbl.Rows)
+        //            {
+        //                broadcastmember member = new broadcastmember();
+        //                member.callno = row["callno"].ToString();
+        //                member.name = row["name"].ToString();
+        //                bmemberlist.Add(member);
+        //            }
+        //            return bmemberlist;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("GetBroadCastMember wrong:{0}", ex.Message);
+        //        return bmemberlist;
+        //    }
+        //}
         /// <summary>
         /// 获取对应用户的键权电话
         /// </summary>
         /// <returns></returns>
-        public List<GroupData> GetKeyExt(string name, string pwd)
+        public List<GroupData> GetKeyExt(string desk_index)
         {
             List<GroupData> keylist = new List<GroupData>();
             DataSet ds = new DataSet();
-            string index = GetDeskIndex(name, pwd);
+            //string index = GetDeskIndex(name, pwd);
             StringBuilder sqlstr = new StringBuilder();
 
-            sqlstr.AppendFormat("select callno from desk_totalmem where desk_index = '{0}' and key = true", index);
+            sqlstr.AppendFormat("select callno from desk_totalmem where desk_index = '{0}' and key = true", desk_index);
             try
             {
                 using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
@@ -491,12 +521,12 @@ namespace SwitchServer
                     return keylist;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("GetTrunk wrong:{0}", ex.Message);
                 return keylist;
             }
-            
+
         }
         
         /// <summary>

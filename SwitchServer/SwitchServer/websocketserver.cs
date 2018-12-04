@@ -8,6 +8,7 @@ using SuperSocket;
 using System.Configuration;
 using Newtonsoft.Json;
 using System.Threading;
+using System.Diagnostics;
 namespace SwitchServer
 {
     public class SimpleWebSocketServer
@@ -124,13 +125,21 @@ namespace SwitchServer
                     }
                     else if(type.Equals("Control"))
                     {
-                        List<GroupData> groupdatalist = new List<GroupData>();
-                        groupdatalist = MessageParse.GetDeskGroup();
-                        //groupdatalist = sqlcmd.GetGroupExt(name, pwd);
                         Console.WriteLine("当前登录用户数：" + ClientManage.loguserlist.Count);
-                        //session.Send("LOG#Success");
-                        string commandstr = "GroupExt#" + JsonConvert.SerializeObject(groupdatalist);
-                        Console.WriteLine(commandstr);
+
+                        //List<GroupData> groupdatalist = new List<GroupData>();
+                        //groupdatalist = MessageParse.GetDeskGroup();
+                        //向客户端返回分组成员和键权电话
+                        string commandstr = "GroupExt#" + JsonConvert.SerializeObject(MessageParse.GetDeskGroup());
+                        Debug.WriteLine(commandstr);
+                        session.Send(commandstr);
+                        //向客户端返回中继电话
+                        commandstr = "GroupTrunk#" + JsonConvert.SerializeObject(MessageParse.GetGroupTrunk());
+                        Debug.WriteLine(commandstr);
+                        session.Send(commandstr);
+                        //向客户端返回广播电话
+                        commandstr = "GroupBroadcast#" + JsonConvert.SerializeObject(MessageParse.GetGroupBroadcast());
+                        Debug.WriteLine(commandstr);
                         session.Send(commandstr);
                     }
                     else

@@ -138,6 +138,15 @@ namespace SwitchServer
         public string groupid;
         public string extid;
     }
+    public class Broadcast
+    {
+        public string name;
+        public List<broadcastmember> bmemberlist;
+        public Broadcast()
+        {
+            bmemberlist = new List<broadcastmember>();
+        }
+    }
     public struct UserLog
     {
         public string name;

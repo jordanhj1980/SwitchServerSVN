@@ -98,10 +98,37 @@ namespace SwitchServer
             finduser = ClientManage.loguserlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
             string name = finduser.name;
             string pwd = finduser.pwd;
-            templist = sqlcmd.GetKeyExt(name, pwd);
-            templist.AddRange(sqlcmd.GetTrunk());
-            templist.AddRange(sqlcmd.GetBroadCast(name, pwd));
-            templist.AddRange(sqlcmd.GetGroupExt(name, pwd));
+            string desk_index = sqlcmd.GetDeskIndex(name, pwd);
+            templist = sqlcmd.GetKeyExt(desk_index);
+            //templist.AddRange(sqlcmd.GetTrunk());
+            //templist.AddRange(sqlcmd.GetBroadCast(name, pwd));
+            templist.AddRange(sqlcmd.GetGroupExt(desk_index));
+            return templist;
+        }
+        public List<trunkdev> GetGroupTrunk()
+        {
+            DataBaseCommand sqlcmd = new DataBaseCommand(Program.conn);
+            List<trunkdev> templist= new List<trunkdev> ();
+            LogUser finduser;
+            finduser = ClientManage.loguserlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
+            string name = finduser.name;
+            string pwd = finduser.pwd;
+            string desk_index = sqlcmd.GetDeskIndex(name, pwd);
+            sqlcmd.GetTrunkList(desk_index, out templist);
+            return templist;
+        }
+        public List<Broadcast>GetGroupBroadcast()
+        {
+            DataBaseCommand sqlcmd = new DataBaseCommand(Program.conn);
+            List<Broadcast> templist = new List<Broadcast>();
+            LogUser finduser;
+            finduser = ClientManage.loguserlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
+            string name = finduser.name;
+            string pwd = finduser.pwd;
+            string desk_index = sqlcmd.GetDeskIndex(name, pwd);
+            
+            templist.AddRange(sqlcmd.GetBroadCast(desk_index));
+
             return templist;
         }
     }
