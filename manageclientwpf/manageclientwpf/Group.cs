@@ -8,6 +8,10 @@ namespace manageclientwpf
 {
     public class Group : NotifyObject
     {
+        public Group()
+        {
+            memberlist = new ObservableCollection<ExtDevice>();
+        }
         private string _index;
         public string index
         {

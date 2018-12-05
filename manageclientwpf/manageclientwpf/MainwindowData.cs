@@ -9,6 +9,20 @@ namespace manageclientwpf
 {
     class MainwindowData:NotifyObject
     {
+        private bool? _testcheck = false;
+        public bool? TestCheck
+        {
+            get { return _testcheck; }
+            set
+            {
+                if (_testcheck != value)
+                {
+                    _testcheck = value;
+                    RaisePropertyChanged("TestCheck");
+                }
+            }
+        }
+
         private KeyBoard _selectedkey;
         public KeyBoard SelectedKey
         {
@@ -132,12 +146,30 @@ namespace manageclientwpf
             }
         }
         private ObservableCollection<KeyBoard> _keyboardlist;
-        public ObservableCollection<KeyBoard> keyboardlist
+        public ObservableCollection<KeyBoard> KeyboardList
         {
             get { return _keyboardlist; }
             set
             {
-                SetAndNotifyIfChanged("keyboardlist", ref _keyboardlist, value);
+                SetAndNotifyIfChanged("KeyboardList", ref _keyboardlist, value);
+            }
+        }
+        private ObservableCollection<ExtDevice> _alldevlist;
+        public ObservableCollection<ExtDevice> AllDevList
+        {
+            get { return _alldevlist; }
+            set
+            {
+                SetAndNotifyIfChanged("AllDevList", ref _alldevlist, value);
+            }
+        }
+        private List<UserLog> _userloglist;
+        public List<UserLog> UserlogList
+        {
+            get { return _userloglist; }
+            set
+            {
+                SetAndNotifyIfChanged("UserlogList", ref _userloglist, value);
             }
         }
         public MainwindowData()
@@ -150,8 +182,10 @@ namespace manageclientwpf
             LogState = true;
             LogButtonText = "登录";
             SelectedKey = new KeyBoard();
-            SelectedKey.name = "1234455";
-            //keyboardlist = new ObservableCollection<KeyBoard>();
+            SelectedGroup = new Group();
+            KeyboardList = new ObservableCollection<KeyBoard>();
+            AllDevList = new ObservableCollection<ExtDevice>();
+            UserlogList = new List<UserLog>();
         }
     }
 }

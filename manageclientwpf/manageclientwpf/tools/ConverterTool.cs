@@ -23,4 +23,36 @@ namespace manageclientwpf
             return null;
         }
     }
+    public class BoolToIsCheckedConverter : IValueConverter
+    {
+
+        public object Convert(
+            object value, 
+            Type targetType, 
+            object parameter, 
+            CultureInfo culture)
+        {
+            return (bool)value;
+        }
+ 
+
+        public object ConvertBack(
+            object value, 
+            Type targetType, 
+            object parameter, 
+            CultureInfo culture)
+        {
+            bool? isChecked = (bool?)value;
+            if (isChecked == null)
+            {
+                return false;
+            }
+            else
+            {
+                return isChecked == true;
+            }
+        }
+
+    }
+
 }

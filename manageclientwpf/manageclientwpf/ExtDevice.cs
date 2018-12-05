@@ -3,11 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace manageclientwpf
 {
     public class ExtDevice : NotifyObject
     {
+        private bool _ischecked = false;
+        public bool DevSelected
+        {
+            get { return _ischecked; }
+            set
+            {
+                if (_ischecked != value)
+                {
+                    _ischecked = value;
+                    RaisePropertyChanged("DevSelected");
+                }
+
+            }
+        }
         private string _callno;
         public string callno
         {
@@ -73,6 +88,15 @@ namespace manageclientwpf
                     RaisePropertyChanged("description");
                 }
             }
+        }
+    }
+    public class AllDev
+    {
+        public string sequence;
+        public ObservableCollection<ExtDevice> DevList;
+        public AllDev()
+        {
+            DevList = new ObservableCollection<ExtDevice>();
         }
     }
 }

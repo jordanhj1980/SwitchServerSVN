@@ -16,21 +16,22 @@ using WebSocket4Net;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 
+
 namespace manageclientwpf
 {
     public partial class MainWindow : Window
     {
         private WebSocket websocket = null;
         private MainwindowData testdata;
-        public ObservableCollection<KeyBoard> keyboardlist;
+        private DataGridPageViewModel pagedata;
+        //public ObservableCollection<KeyBoard> keyboardlist;
         //public KeyBoard SelectedData;
         public MainWindow()
         {
             InitializeComponent();
             this.testdata = new MainwindowData();
             DataContext = this.testdata;
-            keyboardlist = new ObservableCollection<KeyBoard>();
-            Keyboardlist.ItemsSource = keyboardlist;
+            
 
             keyboardview.Visibility = System.Windows.Visibility.Hidden;
             groupview.Visibility = System.Windows.Visibility.Hidden;
@@ -68,24 +69,40 @@ namespace manageclientwpf
                 {
                     AllKeyBoard allkeydata;
                     allkeydata = JsonConvert.DeserializeObject<AllKeyBoard>(level2data.data);
-                    //keyboardlist = allkeydata.keyboardlist;
+
                     this.Dispatcher.Invoke(new Action(() =>
                     {
-                        keyboardlist.Clear();
+                        testdata.KeyboardList.Clear();
                         foreach (KeyBoard element in allkeydata.keyboardlist)
                         {
-                            keyboardlist.Add(element);
+                            testdata.KeyboardList.Add(element);
                         }
                     }), null);
-                    //keyboardlist.Clear();
-                    //foreach (KeyBoard element in allkeydata.keyboardlist)
-                    //{
-                    //    //keyboardlist.Add(element);
-                    //    this.Dispatcher.Invoke(new Action(() =>
-                    //    {
-                    //        keyboardlist.Add(element);
-                    //    }), null);
-                    //}
+
+                }
+                else if(level2data.type.Equals("GETALLREGISTERDEV"))
+                {
+                    AllDev alldev;
+                    alldev = JsonConvert.DeserializeObject<AllDev>(level2data.data);
+                    this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        testdata.AllDevList = alldev.DevList;
+                    }), null);
+                }
+            }
+            else if(level1data.type.Equals("CMD"))
+            {
+                TypeData level2data = ParseType(level1data.data);
+                if(level2data.type.Equals("GetUserlog"))
+                {
+                    //List<UserLog> templist = JsonConvert.DeserializeObject<List<UserLog>>(level2data.data);
+                    testdata.UserlogList = JsonConvert.DeserializeObject<List<UserLog>>(level2data.data);
+                    pagedata = new DataGridPageViewModel(testdata.UserlogList);
+                    Dispatcher.Invoke(new Action(() => 
+                    {
+                        datagridpage.DataContext = pagedata;
+                    }));
+                    //datagridpage.DataContext = pagedata;
                 }
             }
         }
@@ -152,15 +169,14 @@ namespace manageclientwpf
 
         private void delkey_Click(object sender, RoutedEventArgs e)
         {
-            keyboardlist.Remove(testdata.SelectedKey);
+            testdata.KeyboardList.Remove(testdata.SelectedKey);
         }
 
         private void addkey_Click(object sender, RoutedEventArgs e)
         {
-            KeyBoard keytemp = new KeyBoard();
-            keytemp.name = "test";
-            keytemp.ip="192.168.2.123";
-            keyboardlist.Add(keytemp);
+            testdata.SelectedKey = new KeyBoard();
+            testdata.SelectedKey.name = "新增键盘";
+            keyboardview.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void addgroup_Click(object sender, RoutedEventArgs e)
@@ -179,14 +195,16 @@ namespace manageclientwpf
             if(tvi.Header is KeyBoard)
             {
                 var modelkey = tvi.Header as KeyBoard;
-                testdata.SelectedKey = modelkey;
+                //testdata.SelectedKey = modelkey;
+                testdata.SelectedKey = ObjectCopier.Clone<KeyBoard>(modelkey);
                 groupview.Visibility = System.Windows.Visibility.Hidden;
                 keyboardview.Visibility = System.Windows.Visibility.Visible;
             }
             else if(tvi.Header is Group)
             {
                 var modelgroup = tvi.Header as Group;
-                testdata.SelectedGroup = modelgroup;
+                //testdata.SelectedGroup = modelgroup;
+                testdata.SelectedGroup = ObjectCopier.Clone<Group>(modelgroup);
                 keyboardview.Visibility = System.Windows.Visibility.Hidden;
                 groupview.Visibility = System.Windows.Visibility.Visible;
 
@@ -194,9 +212,9 @@ namespace manageclientwpf
                 System.Windows.Controls.StackPanel tvpanel = tv as StackPanel;
                 ItemsPresenter ip = tvpanel.TemplatedParent as ItemsPresenter;
                 TreeViewItem tvii = ip.TemplatedParent as TreeViewItem;//这是父节点
-                testdata.SelectedKey = tvii.Header as KeyBoard;
-                //var parentelement = tvii.Header as KeyBoard;
-                //parentelement.grouplist.Add(new Group());
+                //testdata.SelectedKey = tvii.Header as KeyBoard;
+                testdata.SelectedKey = ObjectCopier.Clone<KeyBoard>(tvii.Header as KeyBoard);
+
             }
         }
 
@@ -207,10 +225,89 @@ namespace manageclientwpf
             eventArg.Source = sender;
             scrollViewer.RaiseEvent(eventArg);
         }
+        
+        private void Update_Click(object sender, RoutedEventArgs e)
+        {
+            string cmdstr = "MAN#ADDKEYBOARD#" + JsonConvert.SerializeObject(testdata.SelectedKey);
+            websocket.Send(cmdstr);
+        }
 
+        private void getalldeskbtn_Click(object sender, RoutedEventArgs e)
+        {
+            websocket.Send("MAN#GETALLKEYBOARD#{\"sequence\":\"123\"}");
+        }
 
+        private void getalldevbtnbtn_Click(object sender, RoutedEventArgs e)
+        {
+            websocket.Send("MAN#GETALLREGISTERDEV#{\"sequence\":\"123\"}");
+        }
 
+        private void addmember_Click(object sender, RoutedEventArgs e)
+        {
+            testdata.SelectedGroup.memberlist.Clear();
+            foreach(ExtDevice t in testdata.AllDevList)
+            {
+                if(t.DevSelected==true)
+                {
+                    testdata.SelectedGroup.memberlist.Add(t);
+                }
+            }
+            testdata.SelectedGroup.RaisePropertyChanged("memberlist");
+        }
 
+        private void grouplistgrid_Selected(object sender, RoutedEventArgs e)
+        {
+            foreach(ExtDevice element in testdata.AllDevList)
+            {
+                //element = testdata.AllDevList.Find(c => c.clientsession.SessionID.Equals(clientsession.SessionID));
+                bool bFind = testdata.SelectedGroup.memberlist.Any<ExtDevice>(p => p.callno == element.callno);
+                if(bFind)
+                {
+                    element.DevSelected = true;
+                }
+            }
+        }
+
+        private void addkeydev_Click(object sender, RoutedEventArgs e)
+        {
+            testdata.SelectedKey.hotlinelist.Clear();
+            foreach (ExtDevice t in testdata.AllDevList)
+            {
+                if (t.DevSelected == true)
+                {
+                    testdata.SelectedKey.hotlinelist.Add(t);
+                }
+            }
+            testdata.SelectedKey.RaisePropertyChanged("hotlinelist");
+        }
+
+        private void assigngroupbtn_Click(object sender, RoutedEventArgs e)
+        {
+            AssignGroupCMD assigngroup = new AssignGroupCMD();
+            assigngroup.distribution = "group";
+            assigngroup.devlist.Add("204");
+            assigngroup.devlist.Add("205");
+            string cmdstr = "CMD#AssignGroup#" + JsonConvert.SerializeObject(assigngroup);
+            testdata.InputStr += cmdstr;
+            websocket.Send(cmdstr);
+        }
+
+        private void cleargroupbtn_Click(object sender, RoutedEventArgs e)
+        {
+            AssignGroupCMD assigngroup = new AssignGroupCMD();
+            assigngroup.distribution = "group";
+            //assigngroup.devlist.Add("204");
+            //assigngroup.devlist.Add("205");
+            string cmdstr = "CMD#AssignGroup#" + JsonConvert.SerializeObject(assigngroup);
+            testdata.InputStr += cmdstr;
+            websocket.Send(cmdstr);
+        }
+
+        private void getuserlog_Click(object sender, RoutedEventArgs e)
+        {
+            string cmdstr = "CMD#GetUserlog#ALL";
+            websocket.Send(cmdstr);
+        }
     }
     public struct TypeData
     {
