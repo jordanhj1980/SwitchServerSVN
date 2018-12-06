@@ -149,8 +149,8 @@ namespace SwitchServer
     }
     public struct UserLog
     {
-        public string name;
-        public string actiontype;
+//        public string name;
         public string time;
+        public string actiontype;    
     }
 }

@@ -21,18 +21,19 @@ namespace SwitchServer
             //Command command;
             TypeData message = ParseType(datastr);
             TypeData commanddata = ParseType(message.data);
+            bool result = false;
             if (message.type.Equals("MAN"))
             {
                 switch (commanddata.type)
                 {
                     case "ADDSW"://解析添加软交换设备
-                        AddSW(commanddata.data);
+                        result = AddSW(commanddata.data);
                         break;
                     case "DELSW"://解析删除软交换设备
-                        DelSW(commanddata.data);
+                        result = DelSW(commanddata.data);
                         break;
                     case "EDITSW"://解析修改软交换设备
-                        EditSW(commanddata.data);
+                        result = EditSW(commanddata.data);
                         break;
                     case "QUERYSW"://解析查询软交换设备列表
                         QuerySW(commanddata.data);
@@ -44,28 +45,28 @@ namespace SwitchServer
                         GetAllDev(commanddata.data);
                         break;
                     case "EDITALLDEV"://解析修改软交换下属设备列表
-                        EditAllDev(commanddata.data);
+                        result = EditAllDev(commanddata.data);
                         break;
                     case "GETALLREGISTERDEV":
                         GetAllRegisterDev(commanddata.data);
                         break;
                     case "ADDUSER"://解析添加调度员
-                        AddUser(commanddata.data);
+                        result = AddUser(commanddata.data);
                         break;
                     case "GETUSER":
                         GetUser(commanddata.data);
                         break;
                     case "DELUSER"://解析删除调度员
-                        DelUser(commanddata.data);
+                        result = DelUser(commanddata.data);
                         break;
                     case "EDITUSER"://解析修改调度员
-                        EditUser(commanddata.data);
+                        result = EditUser(commanddata.data);
                         break;
                     case "ADDKEYBOARD"://解析添加/修改调度键盘
-                        AddKeyboard(commanddata.data);
+                        result = AddKeyboard(commanddata.data);
                         break;
                     case "EDITKEYBOARD":
-                        EditKeyboard(commanddata.data);
+                        result = EditKeyboard(commanddata.data);
                         break;
                     case "GETALLKEYBOARD"://解析查询调度键盘
                         GetAllKeyboard(commanddata.data);
@@ -77,14 +78,36 @@ namespace SwitchServer
                         GetPhoneBook(commanddata.data);
                         break;
                     case "EDITPHONEBOOK":
-                        EditPhoneBook(commanddata.data);
+                        result = EditPhoneBook(commanddata.data);
                         break;
-                    case "":
+                    case "ADDPHONEBOOK":
+                        result = AddPhoneBook(commanddata.data);
+                        break;
+                    case "DELPHONEBOOK":
+                        result = DelPhoneBook(commanddata.data);
                         break;
 
                     default:
                         Console.WriteLine("非可解析控制指令：" + commanddata.type);
                         break;
+                }
+                if(result==true)//向数据库写入操作记录
+                {
+                    LogUser finduser;
+                    finduser = ClientManage.loguserlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
+                    if(finduser==null)
+                    {
+                        finduser = ClientManage.adminlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
+                    }
+                    if(finduser!=null)
+                    {
+                        DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+                        sqlcom.InsertUserLog(finduser.name, commanddata.type);
+                    }
+                    else
+                    {
+                        Console.WriteLine("finduser wrong!!!");
+                    }
                 }
                 return true;
             }
@@ -700,6 +723,38 @@ namespace SwitchServer
             }
             return true;
         }
+        public bool CMDGetPhoneBook(string data)
+        {
+            GetPhoneBookCmd structdata;
+            string respondstr;
+            try
+            {
+                structdata = JsonConvert.DeserializeObject<GetPhoneBookCmd>(data);
+            }
+            catch
+            {
+                respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            GetPhoneBooksp responddata = new GetPhoneBooksp();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+
+
+            if (sqlcom.GetPhoneBook(out responddata))
+            {
+                responddata.sequence = structdata.sequence;
+                respondstr = "CMD#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            else
+            {
+                Console.WriteLine("CMDGetPhoneBook Wrong!!!");
+            }
+            return true;
+        }
         public bool EditPhoneBook(string data)
         {
             EditPhoneBookCmd structdata;
@@ -724,7 +779,7 @@ namespace SwitchServer
                 responddata.sequence = structdata.sequence;
                 responddata.reason = reason;
                 responddata.result = "Success";
-                respondstr = "MAN#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                respondstr = "MAN#EDITPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
                 clientsession.Send(respondstr);
                 Console.WriteLine(respondstr);
             }
@@ -733,7 +788,85 @@ namespace SwitchServer
                 responddata.sequence = structdata.sequence;
                 responddata.reason = reason;
                 responddata.result = "Fail";
-                respondstr = "MAN#GETPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                respondstr = "MAN#EDITPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            return true;
+        }
+        public bool AddPhoneBook(string data)
+        {
+            EditPhoneBookCmd structdata;
+            string respondstr;
+            try
+            {
+                structdata = JsonConvert.DeserializeObject<EditPhoneBookCmd>(data);
+            }
+            catch
+            {
+                respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            EditPhoneBooksp responddata = new EditPhoneBooksp();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+
+            string reason;
+            if (sqlcom.EditPhoneBook(structdata, out reason))
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Success";
+                respondstr = "MAN#ADDPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            else
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Fail";
+                respondstr = "MAN#ADDPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            return true;
+        }
+        public bool DelPhoneBook(string data)
+        {
+            EditPhoneBookCmd structdata;
+            string respondstr;
+            try
+            {
+                structdata = JsonConvert.DeserializeObject<EditPhoneBookCmd>(data);
+            }
+            catch
+            {
+                respondstr = "Jason格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            EditPhoneBooksp responddata = new EditPhoneBooksp();
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+
+            string reason;
+            if (sqlcom.EditPhoneBook(structdata, out reason))
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Success";
+                respondstr = "MAN#DELPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
+                clientsession.Send(respondstr);
+                Console.WriteLine(respondstr);
+            }
+            else
+            {
+                responddata.sequence = structdata.sequence;
+                responddata.reason = reason;
+                responddata.result = "Fail";
+                respondstr = "MAN#DELPHONEBOOK#" + JsonConvert.SerializeObject(responddata);
                 clientsession.Send(respondstr);
                 Console.WriteLine(respondstr);
             }

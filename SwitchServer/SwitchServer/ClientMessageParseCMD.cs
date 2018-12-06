@@ -60,6 +60,9 @@ namespace SwitchServer
                     case "GETCDR"://获取通话记录
                         ParseGetCdr(commanddata.data);
                         break;
+                    case "GetUserlog":
+                        ParseGetUserlog(commanddata.data);
+                        break;
                     case "Hold"://通话保持
                         ParseHold(commanddata.data);
                         break;
@@ -72,7 +75,8 @@ namespace SwitchServer
                     case "AssignGroup"://分组设置
                         ParseAssignGroup(commanddata.data);
                         break;
-                    case "":
+                    case "GETPHONEBOOK":
+                        CMDGetPhoneBook(commanddata.data);
                         break;
 
                     default:
@@ -269,8 +273,25 @@ namespace SwitchServer
                 clientsession.Send(respondstr);
                 return false;
             }
-            //获取软交换对象,根据fromid找软交换，根据toid判断命令类型，暂时固定
-            Command command = new ExtToExt(call.fromid, call.toid);
+            //获取软交换对象,根据fromid找软交换，根据toid判断命令类型
+            string type;
+            List<string> calllist = new List<string>();
+            calllist.Add(call.fromid);
+            SwitchDev srcswitch = Program.switchmanage.GetSwitchFromExtid(calllist, out type);
+            calllist.Clear();
+            calllist.Add(call.toid);
+            SwitchDev desswitch = Program.switchmanage.GetSwitchFromExtid(calllist, out type);
+            Command command;
+            if(srcswitch==desswitch)
+            {
+                command = new ExtToExt(call.fromid, call.toid);
+            }
+            else
+            {
+                command = new ExtToOuter(call.fromid, null,call.toid);
+            }
+
+            
             string commandstr = command.XmlCommandString;
             TypeData com;
             com.type = "EVENT&CDR";
@@ -350,6 +371,19 @@ namespace SwitchServer
             cdrlist = sqlcom.GetCDR();
 
             string respondstr = "CMD#GETCDR#" + JsonConvert.SerializeObject(cdrlist);
+            Console.WriteLine(respondstr);
+            clientsession.Send(respondstr);
+        }
+        public void ParseGetUserlog(string data)
+        {
+            List<UserLog> userloglist = new List<UserLog> ();
+
+            LogUser finduser;
+            finduser = ClientManage.loguserlist.Find(c => c.clientsession.SessionID.Equals(this.clientsession.SessionID));
+
+            DataBaseCommand sqlcom = new DataBaseCommand(Program.conn);
+            userloglist = sqlcom.GetUserLog(finduser.name);
+            string respondstr = "CMD#GetUserlog#" + JsonConvert.SerializeObject(userloglist);
             Console.WriteLine(respondstr);
             clientsession.Send(respondstr);
         }

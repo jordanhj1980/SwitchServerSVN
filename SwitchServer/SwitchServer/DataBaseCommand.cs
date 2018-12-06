@@ -641,13 +641,14 @@ namespace SwitchServer
         /// 获取用户操作记录
         /// </summary>
         /// <returns></returns>
-        public List<UserLog> GetUserLog()
+        public List<UserLog> GetUserLog(string name)
         {
             List<UserLog> userloglist = new List<UserLog>();
 
             StringBuilder sqlstr = new StringBuilder();
 
-            sqlstr.AppendFormat("select name,actiontype,time,from userlog");
+            //sqlstr.AppendFormat("select username,actiontype,time from userlog");
+            sqlstr.AppendFormat("select actiontype,time from userlog where username = '{0}' order by index desc limit 50", name);
 
             DataSet ds = new DataSet();
             try
@@ -660,7 +661,7 @@ namespace SwitchServer
                     foreach (DataRow row in tbl.Rows)
                     {
                         UserLog member = new UserLog();
-                        member.name = row["name"].ToString();
+
                         member.actiontype = row["actiontype"].ToString();
                         member.time = row["time"].ToString();
 

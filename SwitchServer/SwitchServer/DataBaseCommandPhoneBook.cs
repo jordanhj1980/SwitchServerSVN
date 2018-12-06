@@ -54,7 +54,7 @@ namespace SwitchServer
                             {
                                 contact contactmember = new contact();
                                 contactmember.callno = element.callno;
-                                contactmember.name = element.callno;
+                                contactmember.name = element.name;
                                 member.memberlist.Add(contactmember);
                             }
                         }
@@ -76,14 +76,22 @@ namespace SwitchServer
             List<departmentstruct> datalist = new List<departmentstruct> ();
             foreach(departmentstruct element in structdata.departmentlist)
             {
-                foreach(contact member in element.memberlist)
+                if (element.memberlist==null)
                 {
-                    DepartmentData dataelement = new DepartmentData ();
-                    dataelement.department = element.department;
-                    dataelement.callno = member.callno;
-                    dataelement.name = member.name;
-                    departmentlist.Add(dataelement);
+                    reason = "department 没有成员";
+                    return false;
                 }
+                else
+                {
+                    foreach (contact member in element.memberlist)
+                    {
+                        DepartmentData dataelement = new DepartmentData();
+                        dataelement.department = element.department;
+                        dataelement.callno = member.callno;
+                        dataelement.name = member.name;
+                        departmentlist.Add(dataelement);
+                    }
+                }            
             }
 
             int result;

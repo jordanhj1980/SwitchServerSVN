@@ -177,9 +177,9 @@ namespace SwitchServer
             //s.Ip = "192.168.2.101";
             s.Port = this.port;
             s.Mode = SuperSocket.SocketBase.SocketMode.Tcp;
-            s.ClearIdleSession = true;//每ClearIdleSessionInterval秒执行一次清理90秒没数据传送的连接
-            s.ClearIdleSessionInterval = 1;
-            s.IdleSessionTimeOut = 11;
+            //s.ClearIdleSession = true;//每ClearIdleSessionInterval秒执行一次清理90秒没数据传送的连接
+            //s.ClearIdleSessionInterval = 1;
+            //s.IdleSessionTimeOut = 11;
             s.ReceiveBufferSize = 50000;
             s.SendBufferSize = 50000;
 
