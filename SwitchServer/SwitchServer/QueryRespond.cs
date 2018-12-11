@@ -948,6 +948,60 @@ namespace SwitchServer
             return "";
         
         }
+        public string ParseCallOutRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Transfer"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#CallOut#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if (root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if (rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if ((node.NodeType == XmlNodeType.Element) && node.Name.Equals("err"))
+                        {
+                            respond.result = "Fail";
+                            respond.reason = ((XmlElement)node).GetAttribute("reason");
+                            cmdrsp = "CMD#CallOut#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                        if (node.NodeType == XmlNodeType.Comment)
+                        {
+                            respond.result = "Fail";
+                            respond.reason = node.Value.Replace("<!--", "").Replace("-->", "");
+                            cmdrsp = "CMD#CallOut#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+
+        }
         public string ParseClearRespond(string o)
         {
             string revdata = o;

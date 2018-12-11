@@ -360,7 +360,7 @@ namespace SwitchServer
             Command command = new ExtToOuter(call.fromid, call.trunkid, call.toid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "Call";
+            com.type = "CallOut";
             com.data = commandstr;
             com.clientsession = this.clientsession;
             //暂时通过fromid判断是哪个软交换

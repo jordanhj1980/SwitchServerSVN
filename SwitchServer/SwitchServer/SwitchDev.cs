@@ -243,6 +243,18 @@ namespace SwitchServer
                         Console.WriteLine("回复应答：" + reportmessage.message);
                     }
                     break;
+                case "CallOut":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseCallOutRespond(revdata);
+                    if (reportmessage.message.Length > 1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }
+                    break;
                 case "Visitor":
                     controlrespond = new ControlRespond();
                     reportmessage = new ReportMessage();
