@@ -119,8 +119,9 @@ namespace SwitchServer
             command.On();
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "Status";
+            com.type = "NightService";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
@@ -153,8 +154,9 @@ namespace SwitchServer
             command.Off();
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "Status";
+            com.type = "NightService";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
@@ -173,8 +175,9 @@ namespace SwitchServer
             Command command = new ClearCommand(extid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Clear";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add(extid);
             Program.switchmanage.CommandSend(extlist, com);
@@ -197,8 +200,9 @@ namespace SwitchServer
             Command command = new MonitorCommand(call.fromid, call.toid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Monitor";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add(call.fromid);
             Program.switchmanage.CommandSend(extlist, com);
@@ -222,8 +226,9 @@ namespace SwitchServer
             Command command = new BargeinCommand(call.fromid, call.toid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Bargein";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add(call.fromid);
             Program.switchmanage.CommandSend(extlist, com);
@@ -242,6 +247,7 @@ namespace SwitchServer
                 TypeData com;
                 com.type = "QueryExt";
                 com.data = commandstr;
+                com.clientsession = this.clientsession;
                 switchdev.CommandSend(extid, com);
             }
             else if(type=="trunk")
@@ -251,6 +257,7 @@ namespace SwitchServer
                 TypeData com;
                 com.type = "QueryTrunk";
                 com.data = commandstr;
+                com.clientsession = this.clientsession;
                 switchdev.CommandSend(extid, com);
             }
 
@@ -294,8 +301,9 @@ namespace SwitchServer
             
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Call";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add(call.fromid);
 
@@ -324,8 +332,9 @@ namespace SwitchServer
             Command command = new VisitorToExt(call.fromid, call.toid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Visitor";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             //暂时通过toid判断是哪个软交换
             List<string> extlist = new List<string>();
             extlist.Add(call.fromid);
@@ -351,8 +360,9 @@ namespace SwitchServer
             Command command = new ExtToOuter(call.fromid, call.trunkid, call.toid);
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "EVENT&CDR";
+            com.type = "Call";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             //暂时通过fromid判断是哪个软交换
             List<string> extlist = new List<string>();
             extlist.Add(call.fromid);
@@ -393,6 +403,7 @@ namespace SwitchServer
             TypeData com;
             com.type = "NULL";
             com.data = command.XmlCommandString;
+            com.clientsession = this.clientsession;
             Console.WriteLine(com.data);
             List<string> extlist = new List<string>();
             extlist.Add(data);
@@ -404,6 +415,7 @@ namespace SwitchServer
             TypeData com;
             com.type = "NULL";
             com.data = command.XmlCommandString;
+            com.clientsession = this.clientsession;
             Console.WriteLine(com.data);
             List<string> extlist = new List<string>();
             extlist.Add(data);
@@ -433,6 +445,7 @@ namespace SwitchServer
             TypeData com;
             com.type = "Menu";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add(call.toid);
             Program.switchmanage.CommandSend(extlist, com);
@@ -458,6 +471,7 @@ namespace SwitchServer
             TypeData com;
             com.type = "Menu";
             com.data = commandstr;
+            com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
             extlist.Add("204");
             Program.switchmanage.CommandSend(extlist, com);
@@ -484,6 +498,7 @@ namespace SwitchServer
                 TypeData com;
                 com.type = "AssignGroup";
                 com.data = commandstr;
+                com.clientsession = this.clientsession;
                 List<string> extlist = new List<string>();
                 extlist.Add("204");
                 Program.switchmanage.CommandSend(extlist, com);
@@ -496,6 +511,7 @@ namespace SwitchServer
                 TypeData com;
                 com.type = "AssignGroup";
                 com.data = commandstr;
+                com.clientsession = this.clientsession;
                 List<string> extlist = new List<string>();
                 extlist.AddRange(assigngroup.devlist);
                 Program.switchmanage.CommandSend(extlist, com);

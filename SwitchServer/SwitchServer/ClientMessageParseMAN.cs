@@ -304,6 +304,7 @@ namespace SwitchServer
                 TypeData com;
                 com.type = "QueryDeviceInfo";
                 com.data = commandstr;
+                com.clientsession = this.clientsession;
                 switchdev.ThreadPostRequest(com);
             }
 

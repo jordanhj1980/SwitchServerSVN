@@ -123,7 +123,7 @@ namespace SwitchServer
             }
         }
         /// <summary>
-        /// 讯时软交换消息解析
+        /// 讯时软交换上报消息解析
         /// </summary>
         public override void MessageParse(object message)
         {
@@ -132,8 +132,10 @@ namespace SwitchServer
             string datatype = RespData.type;
             string commandstr = "";
             TypeData commanddata;
+            commanddata.clientsession = RespData.clientsession;
             string printstr = "";
             ReportMessage reportmessage;
+            ControlRespond controlrespond = new ControlRespond();
 
             switch (datatype)
             {
@@ -146,6 +148,11 @@ namespace SwitchServer
                     //this.extidlist.Clear();
                     //this.extidlist.AddRange(ParseEventMessage.extlist);
                     Console.WriteLine(ParseEventMessage.reportstr);
+
+                    if ((ParseEventMessage.extlist.Count == 0) && (commanddata.clientsession != null) && (!ParseEventMessage.reportstr.Equals("")))
+                    {
+                        commanddata.clientsession.Send(ParseEventMessage.reportstr);
+                    }
 
                     reportmessage = new ReportMessage();
                     reportmessage.extid.AddRange(ParseEventMessage.extlist);
@@ -224,7 +231,90 @@ namespace SwitchServer
                 case "Transfer":
                     printstr = "收到Transfer应答";
                     break;
-
+                case "Call":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseCallRespond(revdata);
+                    if (reportmessage.message.Length > 1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }
+                    break;
+                case "Visitor":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseVisitorRespond(revdata);
+                    if (reportmessage.message.Length > 1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }
+                    break;
+                case "Clear":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseClearRespond(revdata);
+                    if (reportmessage.message.Length > 1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }     
+                    break;
+                case "Bargein":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseBargeinRespond(revdata);
+                    if (reportmessage.message.Length>1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }                    
+                    break;
+                case "Monitor":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseMonitorRespond(revdata);
+                    if (reportmessage.message.Length>1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }                    
+                    break;
+                case "NightServiceOn":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseNightServiceOnRespond(revdata);
+                    if (reportmessage.message.Length>1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }                    
+                    break;
+                case "NightServiceOff":
+                    controlrespond = new ControlRespond();
+                    reportmessage = new ReportMessage();
+                    Console.WriteLine(revdata);
+                    //reportmessage.extid.Add(controlrespond.extid);
+                    reportmessage.message = controlrespond.ParseNightServiceOffRespond(revdata);
+                    if (reportmessage.message.Length > 1)
+                    {
+                        commanddata.clientsession.Send(reportmessage.message);//谁发的指令，应答还给谁。
+                        Console.WriteLine("回复应答：" + reportmessage.message);
+                    }
+                    break;
                 case "QueryDeviceInfo":
                     QueryDeviceRespond ParseQueryDevice = new QueryDeviceRespond();
                     printstr = ParseQueryDevice.ParseQueryRespond(revdata);
@@ -272,7 +362,8 @@ namespace SwitchServer
             request.ProtocolVersion = HttpVersion.Version11;
             request.ContentType = "text/html";
             request.ContentLength = Encoding.UTF8.GetByteCount(xmlstr);
-            request.Timeout = 1000 * 1000;
+            request.Proxy = null;
+            //request.Timeout = 1000 * 1000;
             Stream myRequestStream;
 
             try
@@ -287,15 +378,16 @@ namespace SwitchServer
             //请求发送
 
             StreamWriter myStreamWriter = new StreamWriter(myRequestStream);
-            myStreamWriter.Write(xmlstr);
             Console.WriteLine("发送指令：");
             Console.WriteLine(xmlstr);
+            myStreamWriter.Write(xmlstr);
+            
             myStreamWriter.Close();
 
-            if (PostData.type.Equals("Transfer"))
-            {
-                PostData.type = "EVENT&CDR";
-            }
+            //if (PostData.type.Equals("Transfer"))
+            //{
+            //    PostData.type = "EVENT&CDR";
+            //}
             //接收消息
             try
             {

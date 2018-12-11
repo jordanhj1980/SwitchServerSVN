@@ -99,6 +99,7 @@ namespace SwitchServer
             TypeData RecvData;
             RecvData.type = "EVENT&CDR";
             RecvData.data = body;
+            RecvData.clientsession = null;
 
             Console.WriteLine(body);
             ctx.Response.Close();

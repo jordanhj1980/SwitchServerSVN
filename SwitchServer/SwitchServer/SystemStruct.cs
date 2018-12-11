@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System;
 namespace SwitchServer
 {
-
+    public struct CMDRespond
+    {
+        public string result;
+        public string reason;
+    }
     public struct FailCalldata
     {
         public string fromid;
@@ -50,11 +54,18 @@ namespace SwitchServer
     {
         public string type;
         public string data;
+        public WebSocketSession clientsession;
     };
     public struct IpTypeData
     {
         public string ip;
         public TypeData typedata;
+    }
+    public struct SessionTypeData
+    {
+        public WebSocketSession clientsession;
+        public string type;
+        public string data;
     }
     /// <summary>
     /// 用于向客户端上报消息

@@ -52,6 +52,7 @@ namespace SwitchServer
             TypeData typedata;
             typedata.type = "Heart";
             typedata.data = "Heart";
+            typedata.clientsession = this.clientsession;
             int indexstart = 0;
             int indexend = 0;
             try

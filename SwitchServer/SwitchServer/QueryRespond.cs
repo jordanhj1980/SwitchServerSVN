@@ -26,23 +26,26 @@ namespace SwitchServer
         {
             string recvdata = o;
             XmlDocument doc = new XmlDocument();
+            XmlNode root;
             try
             {
                 doc.LoadXml(recvdata);
+                root = doc.DocumentElement;
             }
             catch(Exception ex)
             {
                 return "指令格式错误！！！" + ex.Message;
             }
             
-            XmlNode root = doc.DocumentElement;
+            
             string MessageType = root.Name;
             switch (MessageType)
             {
                 case "Event":
                     return ParseEvent(recvdata);
                 case "Cdr":
-                    return ParseCdr(recvdata);
+                    //return ParseCdr(recvdata);
+                    return "CDR";
                 default:
                     Console.WriteLine(MessageType);
                     Console.WriteLine(recvdata);
@@ -273,6 +276,7 @@ namespace SwitchServer
                     break;
                 case "FAILED":
                     this.state = "FAILED";
+                    extlist.Clear();
                     try
                     {
                         printstr = "收到呼叫失败事件：" + "失败原因是" + ((XmlElement)root.LastChild).GetAttribute("code") + ":" +
@@ -285,7 +289,7 @@ namespace SwitchServer
                         faildata.reason = "";//呼叫失败原因
                         faildata.reason = ((XmlElement)root.LastChild).GetAttribute("code");
                         faildata.fromid = ((XmlElement)root.FirstChild).GetAttribute("id");
-
+                        extlist.Add(faildata.fromid);
                         if ((XmlElement)root.FirstChild.NextSibling != null)
                         {
                             switch (((XmlElement)root.FirstChild.NextSibling).Name)
@@ -300,6 +304,7 @@ namespace SwitchServer
                                     Console.WriteLine("FAILED 存在未解析字段");
                                     break;
                             }
+                            extlist.Add(faildata.toid);
                         }
 
                         reportstr = "STATE#FAIL#" + JsonConvert.SerializeObject(faildata);
@@ -311,7 +316,6 @@ namespace SwitchServer
                         Console.WriteLine(root.InnerXml);
                         printstr = "FAIL wrong:" + ex.Message;
                     }
-                    
                     break;
                 //------------------------------------------------------------------------
                 //来电呼入控制流程事件----------------------------------------------------
@@ -751,6 +755,7 @@ namespace SwitchServer
             reportstr = "STATE#" + ext.state + "#" + jasonstr;
             return "返回" + ext.lineid + "号分机属性!" + "\n";// +extattr;
         }
+        
         public string ParseTrunkRespond(string o)
         {
             this.ext.type = "trunk";
@@ -837,5 +842,317 @@ namespace SwitchServer
             reportstr = "STATE#" + ext.state + "#" + jasonstr;
             return "返回" + ext.lineid + "号中继属性!" + "\n" + extattr;
         }
+
     }
+    class ControlRespond
+    {
+        public string extid="";
+        public string ParseVisitorRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Transfer"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#Visitor#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if (root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if (rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if (node.Name.Equals("err"))
+                        {
+                            respond.result = "Fail";
+                            respond.reason = ((XmlElement)node).GetAttribute("reason");
+                            cmdrsp = "CMD#Visitor#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+
+        }
+        public string ParseCallRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Transfer"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#Call#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if(root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if(rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if ((node.NodeType == XmlNodeType.Element)&& node.Name.Equals("err"))
+                        {
+                            respond.result = "Fail";
+                            respond.reason = ((XmlElement)node).GetAttribute("reason");
+                            cmdrsp = "CMD#Call#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                        if(node.NodeType == XmlNodeType.Comment)
+                        {
+                            respond.result = "Fail";
+                            respond.reason = node.Value.Replace("<!--", "").Replace("-->", "");
+                            cmdrsp = "CMD#Call#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+        
+        }
+        public string ParseClearRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Control"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#Clear#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if (root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if (rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if (node.NodeType == XmlNodeType.Comment)
+                        {
+                            respond.result = "Fail";
+                            respond.reason = node.Value.Replace("<!--", "").Replace("-->", "");
+                            cmdrsp = "CMD#Clear#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+        }
+        public string ParseBargeinRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Control"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#Bargein#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if(root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if(rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if(node.NodeType == XmlNodeType.Comment)
+                        {
+                            respond.result = "Fail";
+                            respond.reason = node.Value.Replace("<!--", "").Replace("-->", "");
+                            cmdrsp = "CMD#Bargein#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+        
+        }
+        public string ParseMonitorRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Control"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#Monitor#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else if (root.Name.Equals("Event"))
+            {
+                XmlElement rootelement = (XmlElement)root;
+                if (rootelement.GetAttribute("attribute").Equals("FAILED"))
+                {
+                    XmlNodeList nodelist = root.ChildNodes;
+                    foreach (XmlNode node in nodelist)
+                    {
+                        if (node.NodeType == XmlNodeType.Comment)
+                        {
+                            respond.result = "Fail";
+                            respond.reason = node.Value.Replace("<!--", "").Replace("-->", "");
+                            cmdrsp = "CMD#Monitor#" + JsonConvert.SerializeObject(respond);
+                            return cmdrsp;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("非解析指令！");
+            return "";
+        }
+        public string ParseNightServiceOnRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Status"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#NightServiceOn#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else
+            {
+                respond.result = "Fail";
+                respond.reason = "非法应答";
+                cmdrsp = "CMD#NightServiceOn#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+        }
+        public string ParseNightServiceOffRespond(string o)
+        {
+            string revdata = o;
+            string cmdrsp = "";
+            CMDRespond respond;
+            XmlDocument doc = new XmlDocument();
+            try
+            {
+                doc.LoadXml(revdata);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Console.WriteLine("LoadXml错误：" + e.Message);
+                return "";
+            }
+
+            XmlNode root = doc.DocumentElement;
+
+            if (root.Name.Equals("Status"))
+            {
+                respond.result = "Success";
+                respond.reason = "";
+                cmdrsp = "CMD#NightServiceOff#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+            else
+            {
+                respond.result = "Fail";
+                respond.reason = "非法应答";
+                cmdrsp = "CMD#NightServiceOff#" + JsonConvert.SerializeObject(respond);
+                return cmdrsp;
+            }
+        }
+    }
+    
 }
