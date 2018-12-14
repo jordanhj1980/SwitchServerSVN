@@ -113,13 +113,31 @@ namespace SwitchServer
                     {
                         case "visitor"://来电转分机，分机振铃:
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("from");
+                            try
+                            {
+                                this.calldata.visitorid = ((XmlElement)root.LastChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.LastChild).GetAttribute("callid");
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine("RING visitor wrong:" + ex.Message);
+                            }
+                            
                             break;
                         case "ext"://分机呼分机，分机振铃:
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
                             break;
                         case "outer"://通过 API 实现分机外呼，且呼叫方式为 “先呼被叫，被叫回铃再呼主叫”时，主叫分机振铃:
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("to");
-                            //this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("to");
+                            try
+                            {
+                                this.calldata.outerid = ((XmlElement)root.LastChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.LastChild).GetAttribute("callid");
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine("RING outer wrong:" + ex.Message);
+                            }
                             break;
                         case "menu"://menu呼分机，分机振铃
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("id");
@@ -139,6 +157,15 @@ namespace SwitchServer
                     {
                         case "visitor":
                             this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
+                            try
+                            {
+                                this.calldata.visitorid = ((XmlElement)root.LastChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.LastChild).GetAttribute("callid");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ALERT visitor wrong:" + ex.Message);
+                            }
                             break;
                         case "ext":
                             this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("id");
@@ -155,6 +182,15 @@ namespace SwitchServer
                             break;
                         case "outer":
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("to");
+                            try
+                            {
+                                this.calldata.outerid = ((XmlElement)root.LastChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.LastChild).GetAttribute("callid");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ALERT outer wrong:" + ex.Message);
+                            }
                             break;
                         default:
                             Console.WriteLine("ALERT 第二项存在未解析字段");
@@ -177,6 +213,15 @@ namespace SwitchServer
                         case "visitor":
                             this.calldata.fromid = ((XmlElement)root.LastChild).GetAttribute("from");
                             this.calldata.toid = ((XmlElement)root.LastChild).GetAttribute("to");
+                            try
+                            {
+                                this.calldata.visitorid = ((XmlElement)root.LastChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.LastChild).GetAttribute("callid");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ANSWER visitor wrong:" + ex.Message);
+                            }
                             break;
                         default:
                             Console.WriteLine("ANSWER 存在未解析字段");
@@ -196,6 +241,15 @@ namespace SwitchServer
                         case "outer":
                             this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
                             this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("to");
+                            try
+                            {
+                                this.calldata.outerid = ((XmlElement)root.FirstChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.FirstChild).GetAttribute("callid");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ANSWERED outer wrong:" + ex.Message);
+                            }
                             break;
                         case "ext":
                             this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("id");
@@ -203,6 +257,15 @@ namespace SwitchServer
                         case "visitor":
                             //this.calldata.fromid = ((XmlElement)root.FirstChild).GetAttribute("from");
                             this.calldata.toid = ((XmlElement)root.FirstChild).GetAttribute("from");
+                            try
+                            {
+                                this.calldata.visitorid = ((XmlElement)root.FirstChild).GetAttribute("id");
+                                this.calldata.callid = ((XmlElement)root.FirstChild).GetAttribute("callid");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ANSWERED visitor wrong:" + ex.Message);
+                            }
                             break;
                         default:
                             Console.WriteLine("ANSWERED 存在未解析字段");
@@ -708,10 +771,14 @@ namespace SwitchServer
                         extattr += "outer：\n";
 
                         calldata.toid = lv2element.GetAttribute("to");
+                        calldata.outerid = lv2element.GetAttribute("id");
+                        calldata.callid = lv2element.GetAttribute("callid");
                         break;
                     case "visitor":
                         extattr += "visitor：\n";
                         calldata.toid = lv2element.GetAttribute("from");
+                        calldata.visitorid = lv2element.GetAttribute("id");
+                        calldata.callid = lv2element.GetAttribute("callid");
                         break;
                     case "ext":
                         extattr += "ext：\n";

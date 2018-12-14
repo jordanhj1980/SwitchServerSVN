@@ -132,7 +132,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！" ;
+                respondstr = "Json格式错误！！！" ;
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -174,7 +174,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -217,7 +217,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -259,7 +259,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -289,7 +289,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -329,7 +329,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -357,7 +357,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -392,7 +392,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -425,7 +425,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -459,7 +459,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -492,7 +492,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -527,7 +527,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -561,7 +561,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -598,7 +598,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -632,7 +632,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -664,7 +664,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -702,7 +702,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -734,7 +734,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -766,7 +766,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -805,7 +805,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -844,7 +844,7 @@ namespace SwitchServer
             }
             catch
             {
-                respondstr = "Jason格式错误！！！";
+                respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;

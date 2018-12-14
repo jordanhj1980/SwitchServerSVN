@@ -18,6 +18,9 @@ namespace SwitchServer
     {
         public string fromid;
         public string toid;
+        public string visitorid;
+        public string outerid;
+        public string callid;
     }		
     public struct CallOut
     {

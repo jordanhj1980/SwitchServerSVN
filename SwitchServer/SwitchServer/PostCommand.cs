@@ -342,18 +342,33 @@ namespace SwitchServer
     /// </summary>
     public class ClearCommand : Command
     {
-        string extid;
+        
         private XmlElement bodyelement;
-        public ClearCommand(string id)
+        public ClearCommand(CallData data)
         {
-            this.extid = id;
             commandhead = command.CreateElement("Control");
             commandhead.SetAttribute("attribute", "Clear");
-
+            if((data.visitorid!="")&&(data.visitorid!=null))
+            {
+                bodyelement = command.CreateElement("visitor");
+                bodyelement.SetAttribute("id", data.visitorid);
+                commandbody.Add(bodyelement);
+                BuildXML();
+                return;
+            }
+            if((data.outerid!="")&&(data.outerid!=null))
+            {
+                bodyelement = command.CreateElement("outer");
+                bodyelement.SetAttribute("id", data.outerid);
+                commandbody.Add(bodyelement);
+                BuildXML();
+                return;
+            }
             bodyelement = command.CreateElement("ext");
-            bodyelement.SetAttribute("id", extid);
+            bodyelement.SetAttribute("id", data.toid);
             commandbody.Add(bodyelement);
             BuildXML();
+            
         }
     }
     /// <summary>

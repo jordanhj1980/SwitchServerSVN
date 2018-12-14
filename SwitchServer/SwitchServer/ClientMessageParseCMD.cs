@@ -105,7 +105,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -119,7 +119,7 @@ namespace SwitchServer
             command.On();
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "NightService";
+            com.type = "NightServiceOn";
             com.data = commandstr;
             com.clientsession = this.clientsession;
             Program.switchmanage.CommandSend(extlist, com);
@@ -136,7 +136,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -154,7 +154,7 @@ namespace SwitchServer
             command.Off();
             string commandstr = command.XmlCommandString;
             TypeData com;
-            com.type = "NightService";
+            com.type = "NightServiceOff";
             com.data = commandstr;
             com.clientsession = this.clientsession;
             Program.switchmanage.CommandSend(extlist, com);
@@ -169,18 +169,32 @@ namespace SwitchServer
         //    com.data = commandstr;
         //    Program.switchmanage.CommandSend("204", com);
         //}
-        public void ParseClear(string data)
+        public bool ParseClear(string data)
         {
-            string extid = data;
-            Command command = new ClearCommand(extid);
+            
+            CallData call;
+            //call = JsonConvert.DeserializeObject<CallData>(data);
+            try
+            {
+                call = JsonConvert.DeserializeObject<CallData>(data);
+            }
+            catch
+            {
+                string respondstr = "Json格式错误！！！";
+                Console.WriteLine(respondstr);
+                clientsession.Send(respondstr);
+                return false;
+            }
+            Command command = new ClearCommand(call);
             string commandstr = command.XmlCommandString;
             TypeData com;
             com.type = "Clear";
             com.data = commandstr;
             com.clientsession = this.clientsession;
             List<string> extlist = new List<string>();
-            extlist.Add(extid);
+            extlist.Add(call.fromid);
             Program.switchmanage.CommandSend(extlist, com);
+            return true;
         }
         public bool ParseMonitor(string data)
         {
@@ -192,7 +206,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -218,7 +232,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -267,15 +281,15 @@ namespace SwitchServer
         /// </summary>
         public bool ParseCall(string data)
         {
-            CallData call;
+            CallOut call;
             //call = JsonConvert.DeserializeObject<CallData>(data);
             try
             {
-                call = JsonConvert.DeserializeObject<CallData>(data);
+                call = JsonConvert.DeserializeObject<CallOut>(data);
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -295,7 +309,7 @@ namespace SwitchServer
             }
             else
             {
-                command = new ExtToOuter(call.fromid, null,call.toid);
+                command = new ExtToOuter(call.fromid, call.trunkid,call.toid);
             }
 
             
@@ -324,7 +338,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -352,7 +366,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -435,7 +449,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -461,7 +475,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;
@@ -486,7 +500,7 @@ namespace SwitchServer
             }
             catch
             {
-                string respondstr = "Jason格式错误！！！";
+                string respondstr = "Json格式错误！！！";
                 Console.WriteLine(respondstr);
                 clientsession.Send(respondstr);
                 return false;

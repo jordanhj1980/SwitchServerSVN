@@ -339,9 +339,9 @@ namespace SwitchServer
                     break;
 
                 default:
-                    Console.WriteLine("发现未解析数据！！！\n");
+                    Console.WriteLine("发现未解析数据！！！" + datatype);
 
-                    printstr = "发现未解析数据！！！\n";
+                    printstr = "发现未解析数据！！！" + datatype;
                     printstr += revdata;
                     break;
             }
