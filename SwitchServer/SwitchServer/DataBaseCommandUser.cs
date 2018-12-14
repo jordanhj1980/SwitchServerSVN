@@ -124,7 +124,7 @@ namespace SwitchServer
             respondstruct.userlist = new List<User>();
 
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat("select name,password,privilege,description,status,role,deskassign from governer");
+            sqlstr.AppendFormat("select name,password,privilege,description,status,role,deskassign from governer order by privilege,name");
 
             DataSet ds = new DataSet();
 
