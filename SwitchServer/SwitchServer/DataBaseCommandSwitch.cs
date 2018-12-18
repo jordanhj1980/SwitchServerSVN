@@ -16,6 +16,17 @@ namespace SwitchServer
         {
             reason = "";
             StringBuilder sqlstr = new StringBuilder();
+            if (!IPCheck(addsw.ip))
+            {
+                reason = "IP地址不合法！";
+                return false;
+            }
+            if (!IsUnsign(addsw.port)||addsw.port=="")
+            {
+                reason = "Port非法！";
+                return false;
+            }
+
             sqlstr.AppendFormat(
                 "INSERT INTO switch (devname,ip,port,type,username,password) VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')",
                 addsw.name, addsw.ip, addsw.port, addsw.type, addsw.username, addsw.password);
@@ -86,6 +97,16 @@ namespace SwitchServer
             if ((structdata.index == null) || (structdata.index == ""))
             {
                 reason = "index为空";
+                return false;
+            }
+            if (!IPCheck(structdata.ip))
+            {
+                reason = "IP地址不合法！";
+                return false;
+            }
+            if (!IsUnsign(structdata.port) || structdata.port == "")
+            {
+                reason = "Port非法！";
                 return false;
             }
             //判断哪些值需要更新

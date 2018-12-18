@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 using System.Data;
+using System.Text.RegularExpressions;
 namespace SwitchServer
 {
     partial class DataBaseCommand
@@ -25,6 +26,24 @@ namespace SwitchServer
             {
                 Console.WriteLine("DataBaseCommand wrong:"+ex.Message);
             }
+        }
+        /// <summary>
+        /// 判断IP地址合法性
+        /// </summary>
+        /// <param name="IP"></param>
+        /// <returns></returns>
+        public bool IPCheck(string IP)
+        {
+            return Regex.IsMatch(IP, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
+        }
+        /// <summary>
+        /// 判断是否为数字
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool IsUnsign(string value)
+        {
+            return Regex.IsMatch(value, @"^\d*[.]?\d*$");
         }
         /// <summary>
         /// 获取指定软交换包含的键权电话
