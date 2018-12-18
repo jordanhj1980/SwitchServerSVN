@@ -450,11 +450,12 @@ namespace SwitchServer
                         break;
                 }
             }
-            ReportMessage message = new ReportMessage ();
-            message.extid .Add("220");
-            message.message = "STATE#INVITE#" + JsonConvert.SerializeObject(this.callsessiondata);
-            Program.clientmanage.ReportState(message);
-            Console.WriteLine(message.message);
+            //ReportMessage message = new ReportMessage ();
+            //message.extid.Add("220");
+            //message.message = "STATE#INVITE#" + JsonConvert.SerializeObject(this.callsessiondata);
+            //Program.clientmanage.ReportState(message);
+            //Console.WriteLine(message.message);
+            reportstr = "STATE#INVITE#" + JsonConvert.SerializeObject(this.callsessiondata);
         }
         /// <summary>
         /// 通话记录CDR消息解析

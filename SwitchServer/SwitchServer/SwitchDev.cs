@@ -142,8 +142,9 @@ namespace SwitchServer
                 case "EVENT&CDR":
                     EventMessage ParseEventMessage = new EventMessage();
                     printstr = ParseEventMessage.ParseEventCdr(revdata);
+                    this.state = ParseEventMessage.state;
                     //this.extid = ParseEventMessage.extid;
-                    //this.state = ParseEventMessage.state;
+
                     //this.reportstr = ParseEventMessage.reportstr;
                     //this.extidlist.Clear();
                     //this.extidlist.AddRange(ParseEventMessage.extlist);
@@ -153,7 +154,14 @@ namespace SwitchServer
                     {
                         commanddata.clientsession.Send(ParseEventMessage.reportstr);
                     }
-
+                    ///如果是INVITE消息，添加键权电话列表
+                    if (this.state.Equals("INVITE"))
+                    {
+                        DataBaseCommand sqlcom1 = new DataBaseCommand(Program.conn);
+                        List<string> keyphonelist;
+                        sqlcom1.GetKeyPhoneOfSwitch(this.index,out keyphonelist);
+                        ParseEventMessage.extlist.AddRange(keyphonelist);
+                    }
                     reportmessage = new ReportMessage();
                     reportmessage.extid.AddRange(ParseEventMessage.extlist);
                     reportmessage.message = ParseEventMessage.reportstr;
@@ -162,12 +170,13 @@ namespace SwitchServer
                     switch (this.state)
                     {
                         case "INVITE"://有外线接入
-                            AcceptCommand command = new AcceptCommand(ParseEventMessage.callsessiondata.visitorid);
-                            commandstr = command.XmlCommandString;
-                            commanddata.type = "Accept";
-                            commanddata.data = commandstr;
-                            //this.visitorid = ParseEventMessage.callsessiondata.visitorid;
-                            ThreadPostRequest(commanddata);
+                            //AcceptCommand command = new AcceptCommand(ParseEventMessage.callsessiondata.visitorid);
+                            //commandstr = command.XmlCommandString;
+                            //commanddata.type = "Accept";
+                            //commanddata.data = commandstr;                            
+                            //ThreadPostRequest(commanddata);
+
+
 
                             //System.Threading.Thread.Sleep(1000);
                             ////QueueGroup command1 = new QueueGroup(ParseEventMessage.callsessiondata.visitorid, "1");

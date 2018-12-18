@@ -27,6 +27,44 @@ namespace SwitchServer
             }
         }
         /// <summary>
+        /// 获取指定软交换包含的键权电话
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="extlist"></param>
+        /// <returns></returns>
+        public bool GetKeyPhoneOfSwitch(string index,out List<string> extlist)
+        {
+            extlist = new List<string>();
+            StringBuilder sqlstr = new StringBuilder();
+
+            sqlstr.AppendFormat(@"select d.callno, d.key, m.switch_index from desk_totalmem as d, member as m
+                                   where d.callno=m.callno and m.switch_index = '{0}'
+                                    and key = true",index);
+
+            DataSet ds = new DataSet();
+            try
+            {
+                using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
+                {
+                    sqldap.Fill(ds);
+                    DataTable tbl = ds.Tables[0];//获取第一张表
+
+                    foreach (DataRow row in tbl.Rows)
+                    {
+                        string callno;
+                        callno = row["callno"].ToString();
+                        extlist.Add(callno);           
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetKeyPhoneOfSwitch wrong:" + ex.Message);
+                return false;
+            }
+        }
+        /// <summary>
         /// 更新数据库对应软交换的设备列表
         /// </summary>
         /// <param name="index"></param>
@@ -356,7 +394,7 @@ namespace SwitchServer
             List<GroupData> groupdatalist = new List<GroupData>();
             DataSet ds = new DataSet();
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat(@"select desk_grp_index,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
+            sqlstr.AppendFormat(@"select deskgrp.name,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
                                 and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", desk_index);
             try
             {
@@ -368,7 +406,7 @@ namespace SwitchServer
                     foreach (DataRow row in tbl.Rows)
                     {
                         GroupData groupdata = new GroupData();
-                        groupdata.groupid = row["desk_grp_index"].ToString();
+                        groupdata.groupid = row["name"].ToString();
                         groupdata.extid = row["callno"].ToString();
                         //extinfo.grade = Convert.ToInt32(row["class"]);
                         groupdatalist.Add(groupdata);
