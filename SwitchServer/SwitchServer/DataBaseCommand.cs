@@ -413,7 +413,7 @@ namespace SwitchServer
             List<GroupData> groupdatalist = new List<GroupData>();
             DataSet ds = new DataSet();
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat(@"select deskgrp.name,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
+            sqlstr.AppendFormat(@"select deskgrp.name as groupname,deskgrp_mem.name,callno from deskgrp,deskgrp_mem where deskgrp.desk_index = '{0}'
                                 and deskgrp.index = deskgrp_mem.desk_grp_index order by callno", desk_index);
             try
             {
@@ -425,9 +425,9 @@ namespace SwitchServer
                     foreach (DataRow row in tbl.Rows)
                     {
                         GroupData groupdata = new GroupData();
-                        groupdata.groupid = row["name"].ToString();
+                        groupdata.groupid = row["groupname"].ToString();
                         groupdata.extid = row["callno"].ToString();
-                        //extinfo.grade = Convert.ToInt32(row["class"]);
+                        groupdata.name = row["name"].ToString();
                         groupdatalist.Add(groupdata);
                     }
                     return groupdatalist;
@@ -522,7 +522,7 @@ namespace SwitchServer
             //string index = GetDeskIndex(name, pwd);
             StringBuilder sqlstr = new StringBuilder();
 
-            sqlstr.AppendFormat("select callno from desk_totalmem where desk_index = '{0}' and key = true", desk_index);
+            sqlstr.AppendFormat("select callno,name from desk_totalmem where desk_index = '{0}' and key = true", desk_index);
             try
             {
                 using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
@@ -535,6 +535,7 @@ namespace SwitchServer
                         GroupData groupdata = new GroupData();
                         groupdata.groupid = "0";//表示键权电话
                         groupdata.extid = row["callno"].ToString();
+                        groupdata.name = row["name"].ToString();
                         //extinfo.grade = Convert.ToInt32(row["class"]);
                         keylist.Add(groupdata);
                     }

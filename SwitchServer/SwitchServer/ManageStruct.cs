@@ -70,6 +70,7 @@ namespace SwitchServer
     public class QueryGetAllDevsp
     {
         public string sequence;
+        public string index;
         public List<DevStruct> devlist;
     }
     /// <summary>

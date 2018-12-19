@@ -305,13 +305,14 @@ namespace SwitchServer
                 com.type = "QueryDeviceInfo";
                 com.data = commandstr;
                 com.clientsession = this.clientsession;
+                switchdev.sequence = structdata.sequence;
                 switchdev.ThreadPostRequest(com);
             }
 
 
-            respondstr = "MAN#QueryAllDev#TEST";//协议暂定
-            Console.WriteLine(respondstr);
-            clientsession.Send(respondstr);
+            //respondstr = "MAN#QueryAllDev#TEST";//协议暂定
+            //Console.WriteLine(respondstr);
+            //clientsession.Send(respondstr);
             return true;
         }
         
@@ -341,8 +342,9 @@ namespace SwitchServer
             if (sqlcom.GetAllDev(structdata.index, out responddata))
             {
                 responddata.sequence = structdata.sequence;
+                responddata.index = structdata.index;
             }
-            respondstr = "MAN#QueryAllDev#" + JsonConvert.SerializeObject(responddata);
+            respondstr = "MAN#GETALLDEV#" + JsonConvert.SerializeObject(responddata);
             Console.WriteLine(respondstr);
             clientsession.Send(respondstr);
             return true;

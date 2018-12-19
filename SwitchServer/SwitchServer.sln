@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwitchServer", "SwitchServer\SwitchServer.csproj", "{5E0893F1-955A-4F25-8BD2-465D778F1C8C}"
 EndProject
-Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Setup1", "..\Setup1\Setup1.isproj", "{BA65E910-546F-4B02-ACAD-4475E249BE06}"
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -30,16 +28,6 @@ Global
 		{5E0893F1-955A-4F25-8BD2-465D778F1C8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E0893F1-955A-4F25-8BD2-465D778F1C8C}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
 		{5E0893F1-955A-4F25-8BD2-465D778F1C8C}.SingleImage|Any CPU.Build.0 = Release|Any CPU
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.CD_ROM|Any CPU.ActiveCfg = CD_ROM
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.CD_ROM|Any CPU.Build.0 = CD_ROM
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.Debug|Any CPU.ActiveCfg = DVD-5
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.Debug|Any CPU.Build.0 = DVD-5
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.DVD-5|Any CPU.ActiveCfg = DVD-5
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.DVD-5|Any CPU.Build.0 = DVD-5
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.Release|Any CPU.ActiveCfg = SingleImage
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.Release|Any CPU.Build.0 = SingleImage
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.SingleImage|Any CPU.ActiveCfg = SingleImage
-		{BA65E910-546F-4B02-ACAD-4475E249BE06}.SingleImage|Any CPU.Build.0 = SingleImage
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

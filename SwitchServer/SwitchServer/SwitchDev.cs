@@ -24,6 +24,7 @@ namespace SwitchServer
         public string state;
         public List<string> extidlist;
         public string reportstr;
+        public string sequence;
         //public callsession callsessiondata;
         public List<ExtDevice> extlist;
         public SwitchManage switchmanage;
@@ -345,6 +346,18 @@ namespace SwitchServer
 
                     Program.switchmanage.UpdataSwitchList();
 
+                    QueryGetAllDevsp responddata;
+                    DataBaseCommand sqlcom2 = new DataBaseCommand(Program.conn);
+
+                    if (sqlcom.GetAllDev(this.index, out responddata))
+                    {
+                        responddata.sequence = this.sequence;
+                        responddata.index = this.index;
+                    }
+                    string respondstr = "MAN#QUERYALLDEV#" + JsonConvert.SerializeObject(responddata);
+                    Console.WriteLine(respondstr);
+                    commanddata.clientsession.Send(respondstr);
+
                     break;
 
                 default:
@@ -354,6 +367,7 @@ namespace SwitchServer
                     printstr += revdata;
                     break;
             }
+
             Console.WriteLine(printstr);
         }
         private void AssignExtAttr(ExtDevice extdevice)

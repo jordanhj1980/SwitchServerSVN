@@ -151,6 +151,7 @@ namespace SwitchServer
     {
         public string groupid;
         public string extid;
+        public string name;
     }
     public class Broadcast
     {
