@@ -573,18 +573,36 @@ namespace SwitchServer
             responddata.sequence = structdata.sequence;
             string reason;
             string index;
-            if (sqlcom.AddKeyboard(structdata, out reason ,out index))
+
+            if (structdata.index=="")
             {
-                responddata.index = index;
-                responddata.reason = "";
-                responddata.result = "Success";
+                if (sqlcom.AddKeyboard(structdata, out reason, out index))
+                {
+                    responddata.index = index;
+                    responddata.reason = "";
+                    responddata.result = "Success";
+                }
+                else
+                {
+                    responddata.index = index;
+                    responddata.reason = reason;
+                    responddata.result = "Fail";
+                }
             }
             else
             {
-                responddata.index = index;
-                responddata.reason = reason;
-                responddata.result = "Fail";
+                if (sqlcom.EditKeyboard(structdata, out reason))
+                {
+                    responddata.reason = "";
+                    responddata.result = "Success";
+                }
+                else
+                {
+                    responddata.reason = reason;
+                    responddata.result = "Fail";
+                }
             }
+
             respondstr = "MAN#ADDKEYBOARD#" + JsonConvert.SerializeObject(responddata);
             Console.WriteLine(respondstr);
             clientsession.Send(respondstr);
