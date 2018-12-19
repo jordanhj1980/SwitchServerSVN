@@ -574,7 +574,7 @@ namespace SwitchServer
             string reason;
             string index;
 
-            if (structdata.index=="")
+            if (structdata.index == "" || structdata.index==null)
             {
                 if (sqlcom.AddKeyboard(structdata, out reason, out index))
                 {
