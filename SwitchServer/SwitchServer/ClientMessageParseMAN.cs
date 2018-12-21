@@ -374,6 +374,7 @@ namespace SwitchServer
                 responddata.result = "Success";
                 responddata.reason = reason;
             }
+            else
             {
                 responddata.result = "Fail";
                 responddata.reason = reason;

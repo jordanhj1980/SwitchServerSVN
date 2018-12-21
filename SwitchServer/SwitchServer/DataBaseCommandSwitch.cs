@@ -172,7 +172,7 @@ namespace SwitchServer
             respondstruct = new QuerySWsp();
             respondstruct.switchlist = new List<SwitchStruct>();
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat("SELECT index,devname,ip,port,type,username,password from switch");
+            sqlstr.AppendFormat("SELECT index,devname,ip,port,type,username,password from switch order by index");
 
             DataSet ds = new DataSet();
 
@@ -248,7 +248,7 @@ namespace SwitchServer
             respondstruct = new QueryGetAllDevsp();
             respondstruct.devlist = new List<DevStruct>();
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.AppendFormat("SELECT callno,type,name,level,description from member where switch_index = '{0}'", index);
+            sqlstr.AppendFormat("SELECT callno,type,name,level,description from member where switch_index = '{0}' order by name desc", index);
 
             DataSet ds = new DataSet();
 

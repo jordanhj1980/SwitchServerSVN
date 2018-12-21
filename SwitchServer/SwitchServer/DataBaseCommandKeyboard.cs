@@ -1255,7 +1255,7 @@ namespace SwitchServer
             respond = new GetAllKeyboardsp();
             respond.keyboardlist = new List<Keyboard>();
 
-            sqlstr.AppendFormat("select index,name,mac,ip from desk");//获取所有的控制台
+            sqlstr.AppendFormat("select index,name,mac,ip from desk order by index");//获取所有的控制台
             try
             {
                 using (NpgsqlDataAdapter sqldap = new NpgsqlDataAdapter(sqlstr.ToString(), this.conn))
