@@ -344,9 +344,9 @@ namespace SwitchServer
                 responddata.sequence = structdata.sequence;
                 responddata.index = structdata.index;
             }
-            respondstr = "MAN#GETALLDEV#" + JsonConvert.SerializeObject(responddata);
-            Console.WriteLine(respondstr);
+            respondstr = "MAN#GETALLDEV#" + JsonConvert.SerializeObject(responddata);           
             clientsession.Send(respondstr);
+            Console.WriteLine(respondstr);
             return true;
         }
         public bool EditAllDev(string data)

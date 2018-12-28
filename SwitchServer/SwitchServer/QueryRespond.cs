@@ -614,43 +614,52 @@ namespace SwitchServer
         public string ParseQueryRespond(string o)
         {
             string revdata = (string)o;
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(revdata);
-            XmlNode root = doc.DocumentElement;
-            //XmlNode root1 = root.FirstChild;
-            if(!root.Name.Equals("DeviceInfo"))
+            try
             {
-                Console.WriteLine("解析错误，非查询应答！！！");
-                return "解析错误，非查询应答！！！";
-            }
-            XmlNodeList lv1nodes = root.ChildNodes;
-            foreach (XmlNode lv1element in lv1nodes)
-            {
-                switch(lv1element.Name)
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(revdata);
+                XmlNode root = doc.DocumentElement;
+                if (!root.Name.Equals("DeviceInfo"))
                 {
-                    case "manufacturer":
-                        Manufacturer = lv1element.InnerText;
-                        break;
-                    case "model":
-                        Model = lv1element.InnerText;
-                        break;
-                    case "version":
-                        Version = lv1element.InnerText;
-                        break;
-                    case "mac":
-                        Mac = lv1element.InnerText;
-                        break;
-                    case "devices":
-                        GetDevice(lv1element);
-                        break;
-                    default:
-                        Console.WriteLine("文件包含未解析项目！！！");
-                        return "文件包含未解析项目！！！";
-
+                    Console.WriteLine("解析错误，非查询应答！！！");
+                    return "解析错误，非查询应答！！！";
                 }
+                XmlNodeList lv1nodes = root.ChildNodes;
+                foreach (XmlNode lv1element in lv1nodes)
+                {
+                    switch (lv1element.Name)
+                    {
+                        case "manufacturer":
+                            Manufacturer = lv1element.InnerText;
+                            break;
+                        case "model":
+                            Model = lv1element.InnerText;
+                            break;
+                        case "version":
+                            Version = lv1element.InnerText;
+                            break;
+                        case "mac":
+                            Mac = lv1element.InnerText;
+                            break;
+                        case "devices":
+                            GetDevice(lv1element);
+                            break;
+                        default:
+                            Console.WriteLine("文件包含未解析项目！！！");
+                            return "文件包含未解析项目！！！";
+
+                    }
+                }
+                Console.WriteLine("完成设备查询应答解析");
+                return "完成设备查询应答解析";
             }
-            Console.WriteLine("完成设备查询应答解析");
-            return "完成设备查询应答解析";
+            catch(Exception ex)
+            {
+                Console.WriteLine("ParseQueryRespond wrong : "+ex.Message);
+                return ex.Message;
+            }
+            
+            
         }
     }
 
