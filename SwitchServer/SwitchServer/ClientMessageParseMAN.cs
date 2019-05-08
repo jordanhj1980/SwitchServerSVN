@@ -745,6 +745,12 @@ namespace SwitchServer
             }
             return true;
         }
+
+        /// <summary>
+        /// 电话簿
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool CMDGetPhoneBook(string data)
         {
             GetPhoneBookCmd structdata;

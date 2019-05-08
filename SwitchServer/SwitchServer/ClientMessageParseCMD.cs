@@ -93,6 +93,11 @@ namespace SwitchServer
 
         }
 
+        /// <summary>
+        /// 夜服开启
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseNightServiceOn(string data)
         {
             CallData call;
@@ -125,6 +130,12 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 夜服关闭
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseNightServiceOff(string data)
         {
             CallData call;
@@ -169,6 +180,12 @@ namespace SwitchServer
         //    com.data = commandstr;
         //    Program.switchmanage.CommandSend("204", com);
         //}
+
+        /// <summary>
+        /// 给软交换发送强拆的指令
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseClear(string data)
         {
             
@@ -196,6 +213,12 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 监听
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseMonitor(string data)
         {
             CallData call;
@@ -222,6 +245,12 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 给软交换发送强插的指令
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseBargein(string data)
         {
             CallData call;
@@ -248,6 +277,11 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 给软交换发送获取状态的指令
+        /// </summary>
+        /// <param name="data"></param>
         public void ParseGetState(string data)
         {
             List<string> extid = new List<string>();
@@ -277,7 +311,7 @@ namespace SwitchServer
 
         }
         /// <summary>
-        /// 解析CMD里的Call消息
+        /// 给软交换发送拨号的指令
         /// </summary>
         public bool ParseCall(string data)
         {
@@ -324,6 +358,7 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
         /// <summary>
         /// 来电转接分机
         /// </summary>
@@ -356,6 +391,12 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 拨打外线电话
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseCallOut(string data)
         {
             CallOut call;
@@ -384,6 +425,7 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
         /// <summary>
         /// 获取所有通话记录
         /// </summary>
@@ -398,6 +440,11 @@ namespace SwitchServer
             Console.WriteLine(respondstr);
             clientsession.Send(respondstr);
         }
+
+        /// <summary>
+        /// 获取日志记录
+        /// </summary>
+        /// <param name="data"></param>
         public void ParseGetUserlog(string data)
         {
             List<UserLog> userloglist = new List<UserLog> ();
@@ -411,6 +458,11 @@ namespace SwitchServer
             Console.WriteLine(respondstr);
             clientsession.Send(respondstr);
         }
+
+        /// <summary>
+        /// 通话保持
+        /// </summary>
+        /// <param name="data"></param>
         public void ParseHold(string data)
         {
             HoldCommand command = new HoldCommand(data);
@@ -423,6 +475,11 @@ namespace SwitchServer
             extlist.Add(data);
             Program.switchmanage.CommandSend(extlist, com); ;
         }
+
+        /// <summary>
+        /// 取消通话保持
+        /// </summary>
+        /// <param name="data"></param>
         public void ParseUnhold(string data)
         {
             UnholdCommand command = new UnholdCommand(data);
@@ -491,6 +548,12 @@ namespace SwitchServer
             Program.switchmanage.CommandSend(extlist, com);
             return true;
         }
+
+        /// <summary>
+        /// 分组设置
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool ParseAssignGroup(string data)
         {
             AssignGroupCMD assigngroup = new AssignGroupCMD();

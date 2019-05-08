@@ -829,7 +829,7 @@ namespace SwitchServer
                     Console.WriteLine("非解析状态！！");
                     break;
             }
-            reportstr = "STATE#" + ext.state + "#" + jasonstr;
+            reportstr = "ACTIVESTATE#" + ext.state + "#" + jasonstr;
             return "返回" + ext.lineid + "号分机属性!" + "\n";// +extattr;
         }
         
